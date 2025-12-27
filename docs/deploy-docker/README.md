@@ -156,3 +156,24 @@ make logs
 You should see the logs from your Docker containers streaming in your terminal.
 This is useful for monitoring the application and debugging any issues that may
 arise.
+
+## Troubleshooting
+
+## ERROR: failed to build
+```
+shane|(main=):fullstack-starter$ make build
+cd app && make build
+docker buildx build --platform linux/amd64,linux/arm64 -t shanepanter/full-stack-web-app:latest --push .
+[+] Building 0.0s (0/0)                                                              docker:desktop-linux
+ERROR: failed to build: Multi-platform build is not supported for the docker driver.
+Switch to a different driver, or turn on the containerd image store, and try again.
+Learn more at https://docs.docker.com/go/build-multi-platform/
+make[1]: *** [build] Error 1
+make: *** [build] Error 2
+```
+**Fix**: remove the builder and recreate it with the containerd image store enabled.
+
+```bash
+docker buildx rm multiarch
+make init
+```
