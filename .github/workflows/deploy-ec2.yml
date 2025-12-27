@@ -19,9 +19,9 @@ jobs:
       DOCKER_USERNAME: ${{ vars.DOCKER_USERNAME }}
       APP_VERSION: ${{ vars.APP_VERSION }}
       APP_NAME: ${{ vars.APP_NAME }}
-      EC2_KEY_NAME: ${{ secrets.EC2_KEY_NAME }}
-      EC2_DEPLOY_HOST: ${{ secrets.EC2_DEPLOY_HOST }}
-      EC2_DEPLOY_DIR: ${{ secrets.EC2_DEPLOY_DIR }}
+      EC2_KEY_NAME: ${{ vars.EC2_KEY_NAME }}
+      EC2_DEPLOY_HOST: ${{ vars.EC2_DEPLOY_HOST }}
+      EC2_DEPLOY_DIR: ${{ vars.EC2_DEPLOY_DIR }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
