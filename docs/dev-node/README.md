@@ -61,6 +61,8 @@ running the application. The project provides the following npm scripts:
   and test reports.
 - `npm run debug`: Starts the application with the Node.js inspector enabled for
   debugging. This uses VS Code's built-in debugging tools.
+- `npm run test:setup`: Installs Playwright browsers and dependencies required for
+  running the end-to-end tests.
 - `npm run test:ui`: Launches the Playwright Test UI for interactive test execution
   and debugging. **NOTE:** This requires a graphical environment and may not work in
   headless setups like CodeSpaces.
@@ -74,7 +76,7 @@ The application uses [Playwright](https://playwright.dev/) for end-to-end testin
 to run the test suite, use the following command:
 
 ```bash
-npm run test:install
+npm run test:setup
 npm test
 ```
 

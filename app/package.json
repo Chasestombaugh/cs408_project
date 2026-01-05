@@ -7,6 +7,7 @@
     "start:prod": "NODE_ENV=production node ./src/bin/www",
     "debug": "node --inspect ./src/bin/www",
     "clean": "rm -rf ./data ./src/data ./node_modules ./playwright-report ./test-results ./test-data",
+    "test:setup": "npx playwright install --with-deps",
     "test": "cross-env NODE_ENV=test playwright test",
     "test:ui": "cross-env NODE_ENV=test playwright test --ui",
     "test:debug": "cross-env NODE_ENV=test playwright test --debug"
