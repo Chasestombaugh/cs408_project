@@ -121,6 +121,14 @@ cmd_deploy() {
   echo "http://${EC2_DEPLOY_HOST}"
 }
 
+cmd_install() {
+  load_env
+  echo "Installing web app on EC2 instance..."
+  "mkdir -p ${EC2_DEPLOY_DIR}"
+  cp docker-compose.yml "${EC2_DEPLOY_DIR}/docker-compose.yml"
+  cd ${EC2_DEPLOY_DIR} && docker compose up -d --remove-orphans
+}
+
 cmd_logs() {
   load_env
   ssh -i "${HOME}/.ssh/${EC2_KEY_NAME}" "ubuntu@${EC2_DEPLOY_HOST}" "cd ${EC2_DEPLOY_DIR} && docker compose logs -f"
@@ -360,7 +368,8 @@ cmd_help() {
   print_command "[s ] ssh" "SSH into the EC2 instance"
   print_command "[lg] logs" "Tail service logs on EC2"
   print_command "[ec] ec2" "Verify EC2 SSH connectivity and env vars"
-  print_command "[dy] deploy" "Upload compose and start services on EC2"
+  print_command "[dy] deploy" "Upload compose and start services on EC2 from your local machine"
+  print_command "[dl] install" "Install web app on EC2 instance directly from the server"
   print_blank
 
   print_section "Docker Hub commands"
@@ -413,6 +422,7 @@ main() {
       docker|dk) cmd_docker ;;
       ec2|ec) cmd_ec2 ;;
       deploy|dy) cmd_deploy ;;
+      install|dl) cmd_install ;;
       logs|lg) cmd_logs ;;
       web|w) cmd_web ;;
       open-web|ow) cmd_open_web ;;
