@@ -34,4 +34,7 @@ uses Docker for containerization and simplified deployment.
 
 ## Team Workflow
 
-- Detail your teams workflow here.
+- Development Mode: Solo developer
+- Repository Strategy: Single repository (no forks / pull requests)
+- Branching: Work is done on main for now with the ability to switch to feature branches
+- Commits: Small and frequent commits with clear messages 
