@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -9,22 +9,58 @@
   <link rel="stylesheet" href="/stylesheets/style.css" />
 </head>
 <body class="d-flex flex-column min-vh-100">
+
   <header>
-    <nav class="navbar">
-      <!-- Navbar content can go here -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+      <div class="container">
+        <a class="navbar-brand" href="/">RiftTracker</a>
+        <button
+          class="navbar-toggler"
+          type="button"
+          data-bs-toggle="collapse"
+          data-bs-target="#mainNav"
+          aria-controls="mainNav"
+          aria-expanded="false"
+          aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="mainNav">
+          <ul class="navbar-nav ms-auto">
+            <li class="nav-item">
+              <a class="nav-link" href="/">Home</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="/matches">Matches</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="/matches/new">Add Match</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="/stats">Stats</a>
+            </li>
+          </ul>
+        </div>
+      </div>
     </nav>
   </header>
 
-  <main class="container py-4 flex-grow-1">
-    <%- body %>
-  </main>
+  <main class="flex-grow-1 position-relative">
+  <%- body %>
+</main>
+
+
+  <footer class="border-top bg-light">
+  <div class="container py-2 text-center small text-muted">
+    <strong>RiftTracker</strong> •
+    © <span id="year"></span> Chase Stombaugh •
+    CS408 Full Stack Web Development •
+    Not affiliated with Riot Games
+  </div>
+</footer>
+
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-  <footer class="border-top mt-5">
-    <div class="container py-3">
-      <div class="text-muted small">&copy; <span id="year"></span> Full Stack Web</div>
-    </div>
-  </footer>
   <script>
     document.getElementById('year').textContent = new Date().getFullYear();
   </script>

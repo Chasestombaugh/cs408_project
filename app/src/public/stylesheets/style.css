@@ -1,7 +1,7 @@
 body {
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   min-height: 100vh;
-  padding: 20px 0;
+  /* padding: 20px 0; */
   font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
 }
 
@@ -42,4 +42,14 @@ a {
 .btn-delete {
   padding: 0.25rem 0.5rem;
   font-size: 0.875rem;
+}
+
+main {
+  position: relative;
+  z-index: 1;
+}
+
+footer {
+  position: relative;
+  z-index: 0;
 }

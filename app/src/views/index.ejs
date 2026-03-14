@@ -2,12 +2,50 @@
   <div class="row justify-content-center">
     <div class="col-lg-10">
       <div class="text-center mb-5">
-        <h1 class="display-4 text-white mb-3"><%= title %></h1>
-        <p class="text-white-50">GitHub Repository: <a href="https://github.com/Chasestombaugh/cs408_project">https://github.com/Chasestombaugh/cs408_project</a></p>
-        <img src="/images/dependency_2x.png" alt="Fullstack Dependency" class="img-fluid my-4" style="max-width: 200px;">
-        <ul class="list-unstyled text-white-50 mb-4">
-          <li><a href="/lab0.html" class="btn btn-secondary mt-3">Go to Lab 0 Page</a></li>
-        </ul>
+        <h1 class="display-4 mb-3"><%= title %></h1>
+        <p class="lead mb-4">
+          A lightweight personal performance dashboard for tracking League of Legends matches,
+          reviewing results, and analyzing basic and advanced statistics over time.
+        </p>
+        <div class="d-flex justify-content-center gap-3 flex-wrap">
+          <a href="/matches" class="btn btn-primary btn-lg">Get Started</a>
+          <a href="/stats" class="btn btn-outline-light btn-lg">View Stats</a>
+        </div>
+      </div>
+
+      <div class="row g-4 mt-4">
+        <div class="col-md-4">
+          <div class="card h-100 shadow-sm">
+            <div class="card-body">
+              <h3 class="h5">Track Matches</h3>
+              <p class="card-text">
+                Log match results, champions, roles, K/D/A, and notes for each game.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-md-4">
+          <div class="card h-100 shadow-sm">
+            <div class="card-body">
+              <h3 class="h5">Add Advanced Stats</h3>
+              <p class="card-text">
+                Record detailed data like gold, CS, damage, and vision score when available.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-md-4">
+          <div class="card h-100 shadow-sm">
+            <div class="card-body">
+              <h3 class="h5">Review Performance</h3>
+              <p class="card-text">
+                View summary statistics, match history, and derived metrics like GPM and CSM.
+              </p>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   </div>
