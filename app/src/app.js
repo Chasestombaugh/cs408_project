@@ -18,6 +18,9 @@ if (!fs.existsSync(dataDir)) {
 }
 const databaseManager = db.createDatabaseManager(dbPath);
 
+//log database path
+console.log(`[DB] Initialized at: ${dbPath}`);
+
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.engine('ejs', require('ejs').__express);
