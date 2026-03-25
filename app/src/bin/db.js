@@ -41,11 +41,36 @@ function createDatabaseManager(dbPath) {
   }
 
   return {
-    db: database,
-    dbHelpers: {
-      ensureConnected,
+  db: database,
+  dbHelpers: {
+    ensureConnected,
+
+    getAllMatches: () => {
+      ensureConnected();
+      return database.prepare(`
+        SELECT * FROM matches
+        ORDER BY played_at DESC, id DESC
+      `).all();
     },
-  };
+
+    getMatchesByUsername: (username) => {
+      ensureConnected();
+      return database.prepare(`
+        SELECT * FROM matches
+        WHERE username = ?
+        ORDER BY played_at DESC, id DESC
+      `).all(username);
+    },
+
+    getTotalMatches: () => {
+      ensureConnected();
+      return database.prepare(`
+        SELECT COUNT(*) AS count
+        FROM matches
+      `).get().count;
+    }
+  },
+};
 }
 
 module.exports = {

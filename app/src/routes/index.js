@@ -8,7 +8,18 @@ router.get('/', function(req, res, next) {
 
 /* Match list page */
 router.get('/matches', function(req, res, next) {
-  res.render('matches', { title: 'Matches' });
+  const username = req.query.user ? req.query.user.trim() : '';
+  let matches = [];
+
+  if (username) {
+    matches = req.db.getMatchesByUsername(username);
+  }
+
+  res.render('matches', {
+    title: 'Matches',
+    matches,
+    username,
+  });
 });
 
 /* Add match page */
