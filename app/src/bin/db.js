@@ -43,33 +43,62 @@ function createDatabaseManager(dbPath) {
   return {
   db: database,
   dbHelpers: {
-    ensureConnected,
+  ensureConnected,
 
-    getAllMatches: () => {
-      ensureConnected();
-      return database.prepare(`
-        SELECT * FROM matches
-        ORDER BY played_at DESC, id DESC
-      `).all();
-    },
-
-    getMatchesByUsername: (username) => {
-      ensureConnected();
-      return database.prepare(`
-        SELECT * FROM matches
-        WHERE username = ?
-        ORDER BY played_at DESC, id DESC
-      `).all(username);
-    },
-
-    getTotalMatches: () => {
-      ensureConnected();
-      return database.prepare(`
-        SELECT COUNT(*) AS count
-        FROM matches
-      `).get().count;
-    }
+  getAllMatches: () => {
+    ensureConnected();
+    return database.prepare(`
+      SELECT * FROM matches
+      ORDER BY played_at DESC, id DESC
+    `).all();
   },
+
+  getMatchesByUsername: (username) => {
+    ensureConnected();
+    return database.prepare(`
+      SELECT * FROM matches
+      WHERE username = ?
+      ORDER BY played_at DESC, id DESC
+    `).all(username);
+  },
+
+  getTotalMatches: () => {
+    ensureConnected();
+    return database.prepare(`
+      SELECT COUNT(*) AS count
+      FROM matches
+    `).get().count;
+  },
+
+  deleteMatchesByUsername: (username) => {
+    ensureConnected();
+    return database.prepare(`
+      DELETE FROM matches
+      WHERE username = ?
+    `).run(username).changes;
+  },
+
+  createMatch: (match) => {
+    ensureConnected();
+
+    const stmt = database.prepare(`
+      INSERT INTO matches (
+        username, played_at, mode, champion, role, result,
+        kills, deaths, assists,
+        game_duration_sec, total_gold, total_cs,
+        damage_dealt, damage_taken, vision_score, notes
+      ) VALUES (
+        @username, @played_at, @mode, @champion, @role, @result,
+        @kills, @deaths, @assists,
+        @game_duration_sec, @total_gold, @total_cs,
+        @damage_dealt, @damage_taken, @vision_score, @notes
+      )
+    `);
+
+    const info = stmt.run(match);
+    return info.lastInsertRowid;
+  }
+},
 };
 }
 

@@ -11,7 +11,7 @@ const app = express();
 //Ensure the data directory exists
 
 const dataDir = process.env.DATA_DIR || path.join(__dirname, '..', 'data');
-const dbFileName = process.env.DB_NAME || 'database.sqlite';
+const dbFileName = process.env.DB_NAME || 'rifttracker.db';
 const dbPath = path.join(dataDir, dbFileName);
 if (!fs.existsSync(dataDir)) {
   fs.mkdirSync(dataDir, { recursive: true });
