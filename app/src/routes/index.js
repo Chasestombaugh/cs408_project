@@ -129,3 +129,19 @@ function validateMatch(data) {
 
   return errors;
 }
+
+function normalizeMatchData(data) {
+  return {
+    username: data.username?.trim(),
+    champion: data.champion?.trim(),
+    mode: data.mode,
+    role: data.mode === 'ARAM' ? 'N/A' : data.role || 'N/A',
+    result: data.result,
+
+    kills: parseInt(data.kills) || 0,
+    deaths: parseInt(data.deaths) || 0,
+    assists: parseInt(data.assists) || 0,
+
+    notes: data.notes?.trim() || null,
+  };
+}
