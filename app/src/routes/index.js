@@ -23,7 +23,11 @@ router.get('/matches', function(req, res, next) {
 
 /* Add match page */
 router.get('/matches/new', function(req, res, next) {
-  res.render('add-match', { title: 'Add Match', errors: [], formData: {}, });
+  res.render('add-match', { 
+    title: 'Add Match',
+    errors: [], 
+    formData: {}, 
+  });
 });
 
 /* Match detail page */
