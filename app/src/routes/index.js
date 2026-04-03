@@ -94,3 +94,38 @@ router.get('/debug/seed', function(req, res, next) {
 });
 
 module.exports = router;
+
+function validateMatch(data) {
+  const errors = [];
+
+  if (!data.username || data.username.trim() === '') {
+    errors.push('Username is required.');
+  }
+
+  if (!data.champion || data.champion.trim() === '') {
+    errors.push('Champion is required.');
+  }
+
+  if (!data.mode || data.mode.trim() === '') {
+    errors.push('Game mode is required.');
+  }
+
+  if (!data.result || !['Win', 'Loss'].includes(data.result)) {
+    errors.push('Result must be Win or Loss.');
+  }
+
+  // K/D/A validation (must be numbers >= 0)
+  if (data.kills && isNaN(data.kills)) {
+    errors.push('Kills must be a number.');
+  }
+
+  if (data.deaths && isNaN(data.deaths)) {
+    errors.push('Deaths must be a number.');
+  }
+
+  if (data.assists && isNaN(data.assists)) {
+    errors.push('Assists must be a number.');
+  }
+
+  return errors;
+}
