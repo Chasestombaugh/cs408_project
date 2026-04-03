@@ -30,6 +30,24 @@ router.get('/matches/new', function(req, res, next) {
   });
 });
 
+/* Create match */
+router.post('/matches', function(req, res, next) {
+  const errors = validateMatch(req.body);
+
+  if (errors.length > 0) {
+    return res.status(400).render('add-match', {
+      title: 'Add Match',
+      errors,
+      formData: req.body,
+    });
+  }
+
+  const matchData = normalizeMatchData(req.body);
+  req.db.createMatch(matchData);
+
+  return res.redirect(`/matches?user=${encodeURIComponent(matchData.username)}`);
+});
+
 /* Match detail page */
 router.get('/matches/:id', function(req, res, next) {
   res.render('match-detail', {
@@ -93,11 +111,13 @@ router.get('/debug/seed', function(req, res, next) {
   res.redirect(`/matches?user=${sampleUsername}`);
 });
 
-module.exports = router;
-
 function validateMatch(data) {
   const errors = [];
 
+  if (!data.played_at || data.played_at.trim() === '') {
+    errors.push('Date played is required.');
+  }
+  
   if (!data.username || data.username.trim() === '') {
     errors.push('Username is required.');
   }
@@ -114,34 +134,72 @@ function validateMatch(data) {
     errors.push('Result must be Win or Loss.');
   }
 
+  if (data.mode !== 'ARAM' && (!data.role || data.role.trim() === '')) {
+    errors.push('Role is required for Summoner\'s Rift matches.');
+  }
+
   // K/D/A validation (must be numbers >= 0)
-  if (data.kills && isNaN(data.kills)) {
-    errors.push('Kills must be a number.');
+  if (data.kills === undefined || data.kills === '' || isNaN(data.kills) || Number(data.kills) < 0) {
+    errors.push('Kills must be a non-negative number.');
   }
 
-  if (data.deaths && isNaN(data.deaths)) {
-    errors.push('Deaths must be a number.');
+  if (data.deaths === undefined || data.deaths === '' || isNaN(data.deaths) || Number(data.deaths) < 0) {
+    errors.push('Deaths must be a non-negative number.');
   }
 
-  if (data.assists && isNaN(data.assists)) {
-    errors.push('Assists must be a number.');
+  if (data.assists === undefined || data.assists === '' || isNaN(data.assists) || Number(data.assists) < 0) {
+    errors.push('Assists must be a non-negative number.');
+  }
+
+  if (data.game_duration && data.game_duration.trim() !== '') {
+    if (!/^\d+:\d{2}$/.test(data.game_duration.trim())) {
+      errors.push('Game duration must be in mm:ss format.');
+    }
   }
 
   return errors;
 }
 
+function parseDurationToSeconds(durationStr) {
+  if (!durationStr || durationStr.trim() === '') {
+    return null;
+  }
+
+  const [minutes, seconds] = durationStr.trim().split(':').map(Number);
+  return (minutes * 60) + seconds;
+}
+
+function parseOptionalInt(value) {
+  if (value === undefined || value === null || value === '') {
+    return null;
+  }
+
+  const parsed = parseInt(value, 10);
+  return Number.isNaN(parsed) ? null : parsed;
+}
+
 function normalizeMatchData(data) {
   return {
-    username: data.username?.trim(),
-    champion: data.champion?.trim(),
+    username: data.username.trim(),
+    played_at: data.played_at.trim(),
     mode: data.mode,
-    role: data.mode === 'ARAM' ? 'N/A' : data.role || 'N/A',
+    champion: data.champion.trim(),
+    role: data.mode === 'ARAM' ? 'N/A' : data.role.trim(),
     result: data.result,
 
-    kills: parseInt(data.kills) || 0,
-    deaths: parseInt(data.deaths) || 0,
-    assists: parseInt(data.assists) || 0,
+    kills: parseInt(data.kills, 10),
+    deaths: parseInt(data.deaths, 10),
+    assists: parseInt(data.assists, 10),
 
-    notes: data.notes?.trim() || null,
+    game_duration_sec: parseDurationToSeconds(data.game_duration),
+    total_gold: parseOptionalInt(data.total_gold),
+    total_cs: parseOptionalInt(data.total_cs),
+    damage_dealt: parseOptionalInt(data.damage_dealt),
+    damage_taken: parseOptionalInt(data.damage_taken),
+    vision_score: parseOptionalInt(data.vision_score),
+
+    notes: data.notes && data.notes.trim() !== '' ? data.notes.trim() : null,
   };
 }
+
+module.exports = router;
