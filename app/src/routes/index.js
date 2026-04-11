@@ -50,9 +50,33 @@ router.post('/matches', function(req, res, next) {
 
 /* Match detail page */
 router.get('/matches/:id', function(req, res, next) {
+  const id = parseInt(req.params.id, 10);
+
+  // handles an invalid ID format
+  if (isNaN(id)) {
+    return res.status(400).render('match-detail', {
+      title: 'Match Details',
+      match: null,
+      error: 'Invalid match ID.',
+    });
+  }
+
+  const match = req.db.getMatchById(id);
+
+  // handles match not found
+  if (!match) {
+    return res.status(404).render('match-detail', {
+      title: 'Match Details',
+      match: null,
+      error: 'Match not found.',
+    });
+  }
+
+  // Valid match
   res.render('match-detail', {
     title: 'Match Details',
-    matchId: req.params.id
+    match,
+    error: null,
   });
 });
 
