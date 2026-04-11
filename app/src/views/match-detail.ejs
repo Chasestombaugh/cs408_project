@@ -1,4 +1,94 @@
 <div class="container py-5">
-  <h1 class="mb-3"><%= title %></h1>
-  <p>This page will display details for match ID: <%= matchId %></p>
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+      <h1 class="mb-1"><%= title %></h1>
+      <p class="text-muted mb-0">View full details for a recorded match.</p>
+    </div>
+    <a href="/matches" class="btn btn-outline-secondary">Back to Matches</a>
+  </div>
+
+  <% if (error) { %>
+    <div class="card shadow-sm">
+      <div class="card-body text-center py-5">
+        <h2 class="h5 text-danger mb-3"><%= error %></h2>
+        <p class="text-muted mb-4">The requested match could not be displayed.</p>
+        <a href="/matches" class="btn btn-primary">Return to Matches</a>
+      </div>
+    </div>
+  <% } else if (match) { %>
+
+    <div class="card shadow-sm mb-4">
+      <div class="card-body">
+        <div class="row g-4">
+          <div class="col-md-6">
+            <h2 class="h5 mb-3">Basic Match Information</h2>
+
+            <p class="mb-2"><strong>Username:</strong> <%= match.username %></p>
+            <p class="mb-2"><strong>Date Played:</strong> <%= match.played_at %></p>
+            <p class="mb-2"><strong>Mode:</strong> <%= match.mode %></p>
+            <p class="mb-2"><strong>Champion:</strong> <%= match.champion %></p>
+            <p class="mb-2"><strong>Role:</strong> <%= match.role %></p>
+
+            <p class="mb-2">
+              <strong>Result:</strong>
+              <span class="badge <%= match.result === 'Win' ? 'bg-success' : 'bg-danger' %>">
+                <%= match.result %>
+              </span>
+            </p>
+
+            <p class="mb-2">
+              <strong>K / D / A:</strong>
+              <%= match.kills %> / <%= match.deaths %> / <%= match.assists %>
+            </p>
+
+            <p class="mb-0">
+              <strong>Duration:</strong>
+              <%= match.game_duration_sec
+                ? Math.floor(match.game_duration_sec / 60) + ':' +
+                  String(match.game_duration_sec % 60).padStart(2, '0')
+                : '-' %>
+            </p>
+          </div>
+
+          <div class="col-md-6">
+            <h2 class="h5 mb-3">Advanced Statistics</h2>
+
+            <% const hasAdvancedStats =
+              match.game_duration_sec !== null ||
+              match.total_gold !== null ||
+              match.total_cs !== null ||
+              match.damage_dealt !== null ||
+              match.damage_taken !== null ||
+              match.vision_score !== null;
+            %>
+
+            <% if (hasAdvancedStats) { %>
+              <p class="mb-2"><strong>Total Gold:</strong> <%= match.total_gold ?? '-' %></p>
+              <p class="mb-2"><strong>Total CS:</strong> <%= match.total_cs ?? '-' %></p>
+              <p class="mb-2"><strong>Damage Dealt:</strong> <%= match.damage_dealt ?? '-' %></p>
+              <p class="mb-2"><strong>Damage Taken:</strong> <%= match.damage_taken ?? '-' %></p>
+              <p class="mb-0"><strong>Vision Score:</strong> <%= match.vision_score ?? '-' %></p>
+            <% } else { %>
+              <div class="alert alert-secondary mb-0">
+                Advanced stats were not recorded for this match.
+              </div>
+            <% } %>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card shadow-sm">
+      <div class="card-body">
+        <h2 class="h5 mb-3">Notes</h2>
+
+        <% if (match.notes && match.notes.trim() !== '') { %>
+          <p class="mb-0"><%= match.notes %></p>
+        <% } else { %>
+          <p class="text-muted mb-0">No notes were recorded for this match.</p>
+        <% } %>
+      </div>
+    </div>
+
+  <% } %>
 </div>
