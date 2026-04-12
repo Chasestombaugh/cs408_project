@@ -52,4 +52,36 @@ test.describe('Matches Page', () => {
   await expect(page.locator('body')).toContainText('8 / 2 / 11');
   await expect(page.locator('body')).toContainText('28:15');
   });
+
+  test('should display match detail page for a seeded SR match', async ({ page }) => {
+  await page.goto('/debug/seed');
+  await page.goto('/matches?user=TravisSqrt');
+
+  const srRow = page.locator('tbody tr').filter({ hasText: 'SR' });
+  await expect(srRow).toHaveCount(1);
+  await srRow.getByRole('link', { name: 'View' }).click();
+
+  await expect(page).toHaveTitle(/Match Details/);
+  await expect(page.getByRole('heading', { name: 'Match Details' })).toBeVisible();
+
+  await expect(page.locator('body')).toContainText('Twitch');
+  await expect(page.locator('body')).toContainText('SR');
+  await expect(page.locator('body')).toContainText('ADC');
+  await expect(page.locator('body')).toContainText('Loss');
+  await expect(page.locator('body')).toContainText('10 / 7 / 13');
+  await expect(page.locator('body')).toContainText('14:29');
+
+  await expect(page.locator('body')).toContainText('Advanced Statistics');
+  await expect(page.locator('body')).toContainText('13117');
+  await expect(page.locator('body')).toContainText('57');
+  await expect(page.locator('body')).toContainText('20611');
+  await expect(page.locator('body')).toContainText('16362');
+  });
+
+  test('should handle invalid match IDs gracefully', async ({ page }) => {
+  await page.goto('/matches/9999');
+
+  await expect(page).toHaveTitle(/Match Details/);
+  await expect(page.locator('body')).toContainText('Match not found.');
+  });
 });
