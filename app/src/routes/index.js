@@ -80,6 +80,77 @@ router.get('/matches/:id', function(req, res, next) {
   });
 });
 
+/* renders the edit match page
+*  This validates the ID and gets the match info from the db for the user
+*  pre-populates with the current match data*/
+router.get('/matches/:id/edit', function(req, res, next) {
+  const id = parseInt(req.params.id, 10);
+
+  if (isNaN(id)) {
+    return res.status(400).render('match-detail', {
+      title: 'Match Details',
+      match: null,
+      error: 'Invalid match ID.',
+    });
+  }
+
+  const match = req.db.getMatchById(id);
+
+  if (!match) {
+    return res.status(404).render('match-detail', {
+      title: 'Match Details',
+      match: null,
+      error: 'Match not found.',
+    });
+  }
+
+  res.render('edit-match', {
+    title: 'Edit Match',
+    match,
+    errors: [],
+    formData: match,
+  });
+});
+
+/* Handles posting the edited match details and redirects to match details page if succesful*/ 
+router.post('/matches/:id/edit', function(req, res, next) {
+  const id = parseInt(req.params.id, 10);
+
+  if (isNaN(id)) {
+    return res.status(400).render('match-detail', {
+      title: 'Match Details',
+      match: null,
+      error: 'Invalid match ID.',
+    });
+  }
+
+  const errors = validateMatch(req.body);
+
+  if (errors.length > 0) {
+    return res.status(400).render('edit-match', {
+      title: 'Edit Match',
+      errors,
+      formData: req.body,
+      match: { id },
+    });
+  }
+
+  const matchData = normalizeMatchData(req.body);
+
+  const updated = req.db.updateMatch(id, matchData);
+
+  if (updated === 0) {
+    return res.status(404).render('match-detail', {
+      title: 'Match Details',
+      match: null,
+      error: 'Match not found.',
+    });
+  }
+
+  return res.redirect(`/matches/${id}`);
+});
+
+
 /* Stats page */
 router.get('/stats', function(req, res, next) {
   res.render('stats', { title: 'Statistics' });

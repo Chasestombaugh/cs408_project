@@ -105,7 +105,35 @@ function createDatabaseManager(dbPath) {
 
     const info = stmt.run(match);
     return info.lastInsertRowid;
-  }
+  },
+
+  updateMatch: (id, match) => {
+  ensureConnected();
+
+  const stmt = database.prepare(`
+    UPDATE matches SET
+      username = @username,
+      played_at = @played_at,
+      mode = @mode,
+      champion = @champion,
+      role = @role,
+      result = @result,
+      kills = @kills,
+      deaths = @deaths,
+      assists = @assists,
+      game_duration_sec = @game_duration_sec,
+      total_gold = @total_gold,
+      total_cs = @total_cs,
+      damage_dealt = @damage_dealt,
+      damage_taken = @damage_taken,
+      vision_score = @vision_score,
+      notes = @notes
+    WHERE id = ?
+  `);
+
+  const info = stmt.run(match, id);
+  return info.changes; // number of rows updated
+},
 },
 };
 }
