@@ -84,4 +84,40 @@ test.describe('Matches Page', () => {
   await expect(page).toHaveTitle(/Match Details/);
   await expect(page.locator('body')).toContainText('Match not found.');
   });
+
+  test('should edit an existing match and save updated values', async ({ page }) => {
+  await page.goto('/debug/seed');
+  await page.goto('/matches?user=TravisSqrt');
+
+  const srRow = page.locator('tbody tr').filter({ hasText: 'SR' });
+  await expect(srRow).toHaveCount(1);
+
+  await srRow.getByRole('link', { name: 'Edit' }).click();
+
+  await expect(page).toHaveTitle(/Edit Match/);
+  await expect(page.getByRole('heading', { name: 'Edit Match' })).toBeVisible();
+
+  // Verify form is pre-populated
+  await expect(page.getByLabel('Champion')).toHaveValue('Twitch');
+  await expect(page.getByLabel('Role')).toHaveValue('ADC');
+  await expect(page.getByLabel('Kills')).toHaveValue('10');
+
+  // Update a few fields
+  await page.getByLabel('Champion').fill('Jinx');
+  await page.getByLabel('Kills').fill('12');
+  await page.getByLabel('Deaths').fill('4');
+  await page.getByLabel('Assists').fill('16');
+  await page.getByLabel('Notes').fill('Updated during edit flow.');
+
+  await page.getByRole('button', { name: 'Save Changes' }).click();
+
+  // Should redirect back to detail page
+  await expect(page).toHaveURL(/\/matches\/\d+$/);
+  await expect(page.getByRole('heading', { name: 'Match Details' })).toBeVisible();
+
+  // Confirm updated values appear
+  await expect(page.locator('body')).toContainText('Jinx');
+  await expect(page.locator('body')).toContainText('12 / 4 / 16');
+  await expect(page.locator('body')).toContainText('Updated during edit flow.');
+  });
 });
