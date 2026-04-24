@@ -78,13 +78,24 @@ function createDatabaseManager(dbPath) {
     `).run(username).changes;
   },
 
+  deleteMatchById: (id) => {
+    ensureConnected();
+
+    const info = database.prepare(`
+      DELETE FROM matches
+      WHERE id = ?
+    `).run(id);
+
+    return info.changes;
+  },
+
   getMatchById: (id) => {
         ensureConnected();
         return database.prepare(`
           SELECT * FROM matches
           WHERE id = ?
         `).get(id);
-      },
+  },
 
   createMatch: (match) => {
     ensureConnected();
