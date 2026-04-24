@@ -84,13 +84,20 @@
                   </td>
 
                   <td>
-                    <div class="d-flex gap-2">
+                    <div class="d-flex gap-2 flex-wrap">
                       <a href="/matches/<%= match.id %>" class="btn btn-sm btn-outline-primary">
                         View
                       </a>
+
                       <a href="/matches/<%= match.id %>/edit" class="btn btn-sm btn-outline-dark">
                         Edit
                       </a>
+
+                      <form action="/matches/<%= match.id %>/delete" method="post" class="d-inline">
+                        <button type="submit" class="btn btn-sm btn-outline-danger">
+                          Delete
+                        </button>
+                      </form>
                     </div>
                   </td>
                 </tr>

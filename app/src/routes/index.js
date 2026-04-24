@@ -150,6 +150,32 @@ router.post('/matches/:id/edit', function(req, res, next) {
   return res.redirect(`/matches/${id}`);
 });
 
+/* Delete match */
+router.post('/matches/:id/delete', function(req, res, next) {
+  const id = parseInt(req.params.id, 10);
+
+  if (isNaN(id)) {
+    return res.status(400).render('match-detail', {
+      title: 'Match Details',
+      match: null,
+      error: 'Invalid match ID.',
+    });
+  }
+
+  const match = req.db.getMatchById(id);
+
+  if (!match) {
+    return res.status(404).render('match-detail', {
+      title: 'Match Details',
+      match: null,
+      error: 'Match not found.',
+    });
+  }
+
+  req.db.deleteMatchById(id);
+
+  return res.redirect(`/matches?user=${encodeURIComponent(match.username)}`);
+});
 
 /* Stats page */
 router.get('/stats', function(req, res, next) {
