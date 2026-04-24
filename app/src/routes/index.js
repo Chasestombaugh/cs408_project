@@ -179,7 +179,21 @@ router.post('/matches/:id/delete', function(req, res, next) {
 
 /* Stats page */
 router.get('/stats', function(req, res, next) {
-  res.render('stats', { title: 'Statistics' });
+  const username = req.query.user ? req.query.user.trim() : '';
+  const range = req.query.range || 'all';
+
+  const limit = range === 'all' ? null : parseInt(range, 10);
+
+  const stats = username
+    ? req.db.getStatsByUsername(username, limit)
+    : null;
+
+  res.render('stats', {
+    title: 'Statistics',
+    username,
+    stats,
+    range,
+  });
 });
 
 /* Debug: seed sample data */

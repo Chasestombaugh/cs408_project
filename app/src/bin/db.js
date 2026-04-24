@@ -148,15 +148,19 @@ function createDatabaseManager(dbPath) {
         return info.changes; // number of rows updated
       },
 
-      getStatsByUsername: (username) => {
+      getStatsByUsername: (username, limit = null) => {
         ensureConnected();
 
-        const matches = database.prepare(`
+        const baseQuery = `
           SELECT *
           FROM matches
           WHERE username = ?
           ORDER BY played_at DESC, id DESC
-        `).all(username);
+        `;
+
+        const matches = limit
+          ? database.prepare(baseQuery + ' LIMIT ?').all(username, limit)
+          : database.prepare(baseQuery).all(username);
 
         const totalMatches = matches.length;
         const wins = matches.filter(match => match.result === 'Win').length;
@@ -175,6 +179,7 @@ function createDatabaseManager(dbPath) {
         const totalGold = matchesWithDuration.reduce((sum, match) => sum + (match.total_gold || 0), 0);
         const totalCs = matchesWithDuration.reduce((sum, match) => sum + (match.total_cs || 0), 0);
         const totalMinutes = matchesWithDuration.reduce((sum, match) => sum + (match.game_duration_sec / 60), 0);
+        const totalDamageDealt = matches.reduce((sum, match) => sum + (match.damage_dealt || 0), 0);
 
         const averageGpm = totalMinutes > 0
           ? Math.round(totalGold / totalMinutes)
@@ -184,11 +189,27 @@ function createDatabaseManager(dbPath) {
           ? (totalCs / totalMinutes).toFixed(1)
           : null;
 
-        const modeCounts = {};
+        const averageDamageDealt = totalMatches > 0
+          ? Math.round(totalDamageDealt / totalMatches)
+          : null;
+
+        const modeStats = {};
         const championCounts = {};
 
         matches.forEach(match => {
-          modeCounts[match.mode] = (modeCounts[match.mode] || 0) + 1;
+          if (!modeStats[match.mode]) {
+            modeStats[match.mode] = {
+              total: 0,
+              wins: 0,
+            };
+          }
+
+          modeStats[match.mode].total += 1;
+
+          if (match.result === 'Win') {
+            modeStats[match.mode].wins += 1;
+          }
+
           championCounts[match.champion] = (championCounts[match.champion] || 0) + 1;
         });
 
@@ -207,7 +228,8 @@ function createDatabaseManager(dbPath) {
           averageAssists: totalMatches > 0 ? (totalAssists / totalMatches).toFixed(1) : '0.0',
           averageGpm,
           averageCsm,
-          modeCounts,
+          averageDamageDealt,
+          modeStats,
           mostPlayedChampions,
           recentMatches: matches.slice(0, 5),
         };
