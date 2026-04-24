@@ -41,112 +41,179 @@ function createDatabaseManager(dbPath) {
   }
 
   return {
-  db: database,
-  dbHelpers: {
-  ensureConnected,
+    db: database,
+    dbHelpers: {
+      ensureConnected,
 
-  getAllMatches: () => {
-    ensureConnected();
-    return database.prepare(`
-      SELECT * FROM matches
-      ORDER BY played_at DESC, id DESC
-    `).all();
-  },
-
-  getMatchesByUsername: (username) => {
-    ensureConnected();
-    return database.prepare(`
-      SELECT * FROM matches
-      WHERE username = ?
-      ORDER BY played_at DESC, id DESC
-    `).all(username);
-  },
-
-  getTotalMatches: () => {
-    ensureConnected();
-    return database.prepare(`
-      SELECT COUNT(*) AS count
-      FROM matches
-    `).get().count;
-  },
-
-  deleteMatchesByUsername: (username) => {
-    ensureConnected();
-    return database.prepare(`
-      DELETE FROM matches
-      WHERE username = ?
-    `).run(username).changes;
-  },
-
-  deleteMatchById: (id) => {
-    ensureConnected();
-
-    const info = database.prepare(`
-      DELETE FROM matches
-      WHERE id = ?
-    `).run(id);
-
-    return info.changes;
-  },
-
-  getMatchById: (id) => {
+      getAllMatches: () => {
         ensureConnected();
         return database.prepare(`
           SELECT * FROM matches
+          ORDER BY played_at DESC, id DESC
+        `).all();
+      },
+
+      getMatchesByUsername: (username) => {
+        ensureConnected();
+        return database.prepare(`
+          SELECT * FROM matches
+          WHERE username = ?
+          ORDER BY played_at DESC, id DESC
+        `).all(username);
+      },
+
+      getTotalMatches: () => {
+        ensureConnected();
+        return database.prepare(`
+          SELECT COUNT(*) AS count
+          FROM matches
+        `).get().count;
+      },
+
+      deleteMatchesByUsername: (username) => {
+        ensureConnected();
+        return database.prepare(`
+          DELETE FROM matches
+          WHERE username = ?
+        `).run(username).changes;
+      },
+
+      deleteMatchById: (id) => {
+        ensureConnected();
+
+        const info = database.prepare(`
+          DELETE FROM matches
           WHERE id = ?
-        `).get(id);
-  },
+        `).run(id);
 
-  createMatch: (match) => {
-    ensureConnected();
+        return info.changes;
+      },
 
-    const stmt = database.prepare(`
-      INSERT INTO matches (
-        username, played_at, mode, champion, role, result,
-        kills, deaths, assists,
-        game_duration_sec, total_gold, total_cs,
-        damage_dealt, damage_taken, vision_score, notes
-      ) VALUES (
-        @username, @played_at, @mode, @champion, @role, @result,
-        @kills, @deaths, @assists,
-        @game_duration_sec, @total_gold, @total_cs,
-        @damage_dealt, @damage_taken, @vision_score, @notes
-      )
-    `);
+      getMatchById: (id) => {
+            ensureConnected();
+            return database.prepare(`
+              SELECT * FROM matches
+              WHERE id = ?
+            `).get(id);
+      },
 
-    const info = stmt.run(match);
-    return info.lastInsertRowid;
-  },
+      createMatch: (match) => {
+        ensureConnected();
 
-  updateMatch: (id, match) => {
-  ensureConnected();
+        const stmt = database.prepare(`
+          INSERT INTO matches (
+            username, played_at, mode, champion, role, result,
+            kills, deaths, assists,
+            game_duration_sec, total_gold, total_cs,
+            damage_dealt, damage_taken, vision_score, notes
+          ) VALUES (
+            @username, @played_at, @mode, @champion, @role, @result,
+            @kills, @deaths, @assists,
+            @game_duration_sec, @total_gold, @total_cs,
+            @damage_dealt, @damage_taken, @vision_score, @notes
+          )
+        `);
 
-  const stmt = database.prepare(`
-    UPDATE matches SET
-      username = @username,
-      played_at = @played_at,
-      mode = @mode,
-      champion = @champion,
-      role = @role,
-      result = @result,
-      kills = @kills,
-      deaths = @deaths,
-      assists = @assists,
-      game_duration_sec = @game_duration_sec,
-      total_gold = @total_gold,
-      total_cs = @total_cs,
-      damage_dealt = @damage_dealt,
-      damage_taken = @damage_taken,
-      vision_score = @vision_score,
-      notes = @notes
-    WHERE id = ?
-  `);
+        const info = stmt.run(match);
+        return info.lastInsertRowid;
+      },
 
-  const info = stmt.run(match, id);
-  return info.changes; // number of rows updated
-},
-},
-};
+      updateMatch: (id, match) => {
+        ensureConnected();
+
+        const stmt = database.prepare(`
+          UPDATE matches SET
+            username = @username,
+            played_at = @played_at,
+            mode = @mode,
+            champion = @champion,
+            role = @role,
+            result = @result,
+            kills = @kills,
+            deaths = @deaths,
+            assists = @assists,
+            game_duration_sec = @game_duration_sec,
+            total_gold = @total_gold,
+            total_cs = @total_cs,
+            damage_dealt = @damage_dealt,
+            damage_taken = @damage_taken,
+            vision_score = @vision_score,
+            notes = @notes
+          WHERE id = ?
+        `);
+
+        
+
+        const info = stmt.run(match, id);
+        return info.changes; // number of rows updated
+      },
+
+      getStatsByUsername: (username) => {
+        ensureConnected();
+
+        const matches = database.prepare(`
+          SELECT *
+          FROM matches
+          WHERE username = ?
+          ORDER BY played_at DESC, id DESC
+        `).all(username);
+
+        const totalMatches = matches.length;
+        const wins = matches.filter(match => match.result === 'Win').length;
+        const losses = matches.filter(match => match.result === 'Loss').length;
+
+        const winRate = totalMatches > 0
+          ? Math.round((wins / totalMatches) * 100)
+          : 0;
+
+        const totalKills = matches.reduce((sum, match) => sum + match.kills, 0);
+        const totalDeaths = matches.reduce((sum, match) => sum + match.deaths, 0);
+        const totalAssists = matches.reduce((sum, match) => sum + match.assists, 0);
+
+        const matchesWithDuration = matches.filter(match => match.game_duration_sec && match.game_duration_sec > 0);
+
+        const totalGold = matchesWithDuration.reduce((sum, match) => sum + (match.total_gold || 0), 0);
+        const totalCs = matchesWithDuration.reduce((sum, match) => sum + (match.total_cs || 0), 0);
+        const totalMinutes = matchesWithDuration.reduce((sum, match) => sum + (match.game_duration_sec / 60), 0);
+
+        const averageGpm = totalMinutes > 0
+          ? Math.round(totalGold / totalMinutes)
+          : null;
+
+        const averageCsm = totalMinutes > 0
+          ? (totalCs / totalMinutes).toFixed(1)
+          : null;
+
+        const modeCounts = {};
+        const championCounts = {};
+
+        matches.forEach(match => {
+          modeCounts[match.mode] = (modeCounts[match.mode] || 0) + 1;
+          championCounts[match.champion] = (championCounts[match.champion] || 0) + 1;
+        });
+
+        const mostPlayedChampions = Object.entries(championCounts)
+          .map(([champion, count]) => ({ champion, count }))
+          .sort((a, b) => b.count - a.count);
+
+        return {
+          username,
+          totalMatches,
+          wins,
+          losses,
+          winRate,
+          averageKills: totalMatches > 0 ? (totalKills / totalMatches).toFixed(1) : '0.0',
+          averageDeaths: totalMatches > 0 ? (totalDeaths / totalMatches).toFixed(1) : '0.0',
+          averageAssists: totalMatches > 0 ? (totalAssists / totalMatches).toFixed(1) : '0.0',
+          averageGpm,
+          averageCsm,
+          modeCounts,
+          mostPlayedChampions,
+          recentMatches: matches.slice(0, 5),
+        };
+      },
+    },
+  };
 }
 
 module.exports = {
