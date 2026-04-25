@@ -1,6 +1,8 @@
 const { test, expect } = require('@playwright/test');
 
 test.describe('Matches Page', () => {
+  test.describe.configure({ mode: 'serial' });
+  
   test('should display matches page and username filter', async ({ page }) => {
     await page.goto('/matches');
 
@@ -119,5 +121,42 @@ test.describe('Matches Page', () => {
   await expect(page.locator('body')).toContainText('Jinx');
   await expect(page.locator('body')).toContainText('12 / 4 / 16');
   await expect(page.locator('body')).toContainText('Updated during edit flow.');
+  });
+
+  test('should delete a match and remove it from the list', async ({ page }) => {
+  await page.goto('/debug/seed');
+  await page.goto('/matches?user=TravisSqrt');
+
+  const srRow = page.locator('tbody tr').filter({ hasText: 'SR' });
+  await expect(srRow).toHaveCount(1);
+
+  await srRow.getByRole('button', { name: 'Delete' }).click();
+
+  await expect(page).toHaveURL(/\/matches\?user=TravisSqrt/);
+  await expect(page.locator('tbody tr').filter({ hasText: 'SR' })).toHaveCount(0);
+  await expect(page.locator('body')).toContainText('ARAM');
+  });
+
+  test('should display username-filtered stats with derived metrics', async ({ page }) => {
+  await page.goto('/debug/seed');
+  await page.goto('/stats?user=TravisSqrt&range=all');
+
+  await expect(page).toHaveTitle(/Statistics/);
+  await expect(page.getByRole('heading', { name: 'Statistics' })).toBeVisible();
+
+  await expect(page.locator('body')).toContainText('Viewing stats for: TravisSqrt');
+  await expect(page.locator('body')).toContainText('Total Matches');
+  await expect(page.locator('body')).toContainText('Win Rate');
+  await expect(page.locator('body')).toContainText('Average KDA');
+  await expect(page.locator('body')).toContainText('Derived Metrics');
+
+  await expect(page.locator('body')).toContainText('Matches by Mode');
+  await expect(page.locator('body')).toContainText('SR');
+  await expect(page.locator('body')).toContainText('ARAM');
+
+  await expect(page.locator('body')).toContainText('Most Played Champions');
+  await expect(page.locator('body')).toContainText('Twitch');
+
+  await expect(page.locator('body')).toContainText('Avg Damage');
   });
 });
