@@ -2,12 +2,12 @@ const { test, expect } = require('@playwright/test');
 
 test.describe('Matches Page', () => {
   test.describe.configure({ mode: 'serial' });
-  
+
   test('should display matches page and username filter', async ({ page }) => {
     await page.goto('/matches');
 
     await expect(page).toHaveTitle(/Matches/);
-    await expect(page.getByRole('heading', { name: 'Matches' })).toBeVisible();
+    await expect(page.getByRole('heading', { name: 'Matches', exact: true })).toBeVisible();
     await expect(page.getByPlaceholder('Enter username')).toBeVisible();
     await expect(page.getByRole('button', { name: 'View' })).toBeVisible();
   });
