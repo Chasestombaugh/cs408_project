@@ -1,10 +1,10 @@
-s<div class="container py-5">
+<div class="container py-5">
   <div class="row justify-content-center">
     <div class="col-lg-10 col-xl-8">
       <div class="d-flex justify-content-between align-items-center mb-4">
         <div>
-          <h1 class="mb-1"><%= title %></h1>
-          <p class="text-muted mb-0">Update an existing match and save changes.</p>
+          <h1 class="mb-1 text-gold"><%= title %></h1>
+          <p class="text-light opacity-75 mb-0">Update an existing match and save changes.</p>
         </div>
         <a href="/matches/<%= match.id %>" class="btn btn-dark">Back to Match</a>
       </div>
@@ -24,7 +24,7 @@ s<div class="container py-5">
       <% } %>
 
       <div class="card shadow-sm">
-        <div class="card-body">
+        <div class="card-body text-dark">
           <form action="/matches/<%= match.id %>/edit" method="post" class="row g-3">
             <div class="col-md-6">
               <label for="username" class="form-label">Username</label>
@@ -95,56 +95,27 @@ s<div class="container py-5">
 
             <div class="col-md-4">
               <label for="kills" class="form-label">Kills</label>
-              <input
-                type="number"
-                min="0"
-                class="form-control"
-                id="kills"
-                name="kills"
-                value="<%= values.kills ?? '' %>"
-                required
-              >
+              <input type="number" min="0" class="form-control" id="kills" name="kills" value="<%= values.kills ?? '' %>" required>
             </div>
 
             <div class="col-md-4">
               <label for="deaths" class="form-label">Deaths</label>
-              <input
-                type="number"
-                min="0"
-                class="form-control"
-                id="deaths"
-                name="deaths"
-                value="<%= values.deaths ?? '' %>"
-                required
-              >
+              <input type="number" min="0" class="form-control" id="deaths" name="deaths" value="<%= values.deaths ?? '' %>" required>
             </div>
 
             <div class="col-md-4">
               <label for="assists" class="form-label">Assists</label>
-              <input
-                type="number"
-                min="0"
-                class="form-control"
-                id="assists"
-                name="assists"
-                value="<%= values.assists ?? '' %>"
-                required
-              >
+              <input type="number" min="0" class="form-control" id="assists" name="assists" value="<%= values.assists ?? '' %>" required>
             </div>
 
             <div class="col-12">
               <label for="notes" class="form-label">Notes</label>
-              <textarea
-                class="form-control"
-                id="notes"
-                name="notes"
-                rows="3"
-              ><%= values.notes || '' %></textarea>
+              <textarea class="form-control" id="notes" name="notes" rows="3"><%= values.notes || '' %></textarea>
             </div>
 
             <div class="col-12">
               <details class="border rounded p-3" open>
-                <summary class="fw-semibold">Advanced Statistics (Optional)</summary>
+                <summary class="fw-semibold text-gold">Advanced Statistics (Optional)</summary>
 
                 <div class="row g-3 mt-2">
                   <div class="col-md-4">
@@ -163,62 +134,27 @@ s<div class="container py-5">
 
                   <div class="col-md-4">
                     <label for="total_gold" class="form-label">Total Gold</label>
-                    <input
-                      type="number"
-                      min="0"
-                      class="form-control"
-                      id="total_gold"
-                      name="total_gold"
-                      value="<%= values.total_gold ?? '' %>"
-                    >
+                    <input type="number" min="0" class="form-control" id="total_gold" name="total_gold" value="<%= values.total_gold ?? '' %>">
                   </div>
 
                   <div class="col-md-4">
                     <label for="total_cs" class="form-label">Total CS</label>
-                    <input
-                      type="number"
-                      min="0"
-                      class="form-control"
-                      id="total_cs"
-                      name="total_cs"
-                      value="<%= values.total_cs ?? '' %>"
-                    >
+                    <input type="number" min="0" class="form-control" id="total_cs" name="total_cs" value="<%= values.total_cs ?? '' %>">
                   </div>
 
                   <div class="col-md-4">
                     <label for="damage_dealt" class="form-label">Damage Dealt</label>
-                    <input
-                      type="number"
-                      min="0"
-                      class="form-control"
-                      id="damage_dealt"
-                      name="damage_dealt"
-                      value="<%= values.damage_dealt ?? '' %>"
-                    >
+                    <input type="number" min="0" class="form-control" id="damage_dealt" name="damage_dealt" value="<%= values.damage_dealt ?? '' %>">
                   </div>
 
                   <div class="col-md-4">
                     <label for="damage_taken" class="form-label">Damage Taken</label>
-                    <input
-                      type="number"
-                      min="0"
-                      class="form-control"
-                      id="damage_taken"
-                      name="damage_taken"
-                      value="<%= values.damage_taken ?? '' %>"
-                    >
+                    <input type="number" min="0" class="form-control" id="damage_taken" name="damage_taken" value="<%= values.damage_taken ?? '' %>">
                   </div>
 
                   <div class="col-md-4">
                     <label for="vision_score" class="form-label">Vision Score</label>
-                    <input
-                      type="number"
-                      min="0"
-                      class="form-control"
-                      id="vision_score"
-                      name="vision_score"
-                      value="<%= values.vision_score ?? '' %>"
-                    >
+                    <input type="number" min="0" class="form-control" id="vision_score" name="vision_score" value="<%= values.vision_score ?? '' %>">
                   </div>
                 </div>
               </details>
