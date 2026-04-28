@@ -175,18 +175,46 @@
   const modeSelect = document.getElementById('mode');
   const roleFieldWrapper = document.getElementById('roleFieldWrapper');
   const roleSelect = document.getElementById('role');
+  const durationInput = document.getElementById('game_duration');
+  const visionScoreInput = document.getElementById('vision_score');
 
   function updateRoleField() {
     if (modeSelect.value === 'ARAM') {
       roleFieldWrapper.style.display = 'none';
       roleSelect.value = '';
       roleSelect.required = false;
+
+      if (visionScoreInput && visionScoreInput.value === '') {
+        visionScoreInput.value = '0';
+      }
     } else {
       roleFieldWrapper.style.display = '';
       roleSelect.required = true;
     }
   }
 
-  modeSelect.addEventListener('change', updateRoleField);
-  updateRoleField();
+  function formatDurationInput() {
+    if (!durationInput) return;
+
+    let digits = durationInput.value.replace(/\D/g, '');
+
+    if (digits.length > 4) {
+      digits = digits.slice(0, 4);
+    }
+
+    if (digits.length >= 3) {
+      durationInput.value = digits.slice(0, -2) + ':' + digits.slice(-2);
+    } else {
+      durationInput.value = digits;
+    }
+  }
+
+  if (modeSelect) {
+    modeSelect.addEventListener('change', updateRoleField);
+    updateRoleField();
+  }
+
+  if (durationInput) {
+    durationInput.addEventListener('input', formatDurationInput);
+  }
 </script>
