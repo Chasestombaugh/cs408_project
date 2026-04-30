@@ -90,8 +90,8 @@ function createDatabaseManager(dbPath) {
       },
 
       getMatchById: (id) => {
-            ensureConnected();
-            return database.prepare(`
+        ensureConnected();
+        return database.prepare(`
               SELECT * FROM matches
               WHERE id = ?
             `).get(id);
@@ -142,7 +142,7 @@ function createDatabaseManager(dbPath) {
           WHERE id = ?
         `);
 
-        
+
 
         const info = stmt.run(match, id);
         return info.changes; // number of rows updated
@@ -180,7 +180,7 @@ function createDatabaseManager(dbPath) {
         const totalCs = matchesWithDuration.reduce((sum, match) => sum + (match.total_cs || 0), 0);
         const totalMinutes = matchesWithDuration.reduce((sum, match) => sum + (match.game_duration_sec / 60), 0);
         const totalDamageDealt = matches.reduce((sum, match) => sum + (match.damage_dealt || 0), 0);
-
+        const totalDamageTaken = matches.reduce((sum, match) => sum + (match.damage_taken || 0), 0);
         const averageGpm = totalMinutes > 0
           ? Math.round(totalGold / totalMinutes)
           : null;
@@ -191,6 +191,10 @@ function createDatabaseManager(dbPath) {
 
         const averageDamageDealt = totalMatches > 0
           ? Math.round(totalDamageDealt / totalMatches)
+          : null;
+
+        const averageDamageTaken = totalMatches > 0
+          ? Math.round(totalDamageTaken / totalMatches)
           : null;
 
         const modeStats = {};
@@ -229,10 +233,20 @@ function createDatabaseManager(dbPath) {
           averageGpm,
           averageCsm,
           averageDamageDealt,
+          averageDamageTaken,
           modeStats,
           mostPlayedChampions,
           recentMatches: matches.slice(0, 5),
         };
+      },
+
+      getMatchesByUserAndChampion: (username, champion) => {
+        ensureConnected();
+        return database.prepare(`
+          SELECT * FROM matches
+          WHERE username = ? AND champion = ?
+          ORDER BY played_at DESC, id DESC
+        `).all(username, champion);
       },
     },
   };

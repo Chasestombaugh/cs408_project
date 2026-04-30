@@ -1,111 +1,127 @@
 <div class="container py-5">
   <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-end gap-3 mb-4">
     <div>
-      <h1 class="mb-1 text-gold"><%= title %></h1>
+      <h1 class="mb-1 text-gold">
+        <%= title %>
+      </h1>
       <p class="text-light opacity-75 mb-0">View recorded matches by username.</p>
     </div>
 
     <form action="/matches" method="get" class="d-flex gap-2">
-      <input
-        type="text"
-        name="user"
-        class="form-control"
-        placeholder="Enter username"
-        value="<%= username %>"
-      />
+      <input type="text" name="user" class="form-control" placeholder="Enter username" value="<%= username %>" />
       <button type="submit" class="btn btn-primary">View</button>
     </form>
   </div>
 
   <% if (username) { %>
     <p class="mb-4 text-light">
-      Viewing matches for: <strong class="text-gold"><%= username %></strong>
+      Viewing matches for:
+      <strong class="text-gold">
+        <%= username %>
+      </strong>
+
+      <% if (champion) { %>
+        <span class="text-light opacity-75"> • Champion:</span>
+        <strong class="text-gold">
+          <%= champion %>
+        </strong>
+
+        <a href="/matches?user=<%= encodeURIComponent(username) %>" class="ms-2 text-light opacity-75">
+          Clear filter
+        </a>
+        <% } %>
     </p>
-  <% } %>
+    <% } %>
 
-  <% if (!username && matches.length === 0) { %>
-    <div class="card shadow-sm">
-      <div class="card-body text-center py-5">
-        <h2 class="h5 text-dark">No matches yet</h2>
-        <p class="text-muted mb-0">Start by adding your first match.</p>
-        <a href="/matches/new" class="btn btn-primary mt-2">Add Match</a>
-      </div>
-    </div>
-
-  <% } else if (matches.length === 0) { %>
-    <div class="card shadow-sm">
-      <div class="card-body text-center py-5">
-        <h2 class="h5 text-dark">No matches found</h2>
-        <p class="text-muted">There are currently no recorded matches for this user.</p>
-        <a href="/matches/new" class="btn btn-primary">Add Match</a>
-      </div>
-    </div>
-
-  <% } else { %>
-    <div class="card shadow-sm">
-      <div class="card-body p-0">
-        <div class="table-responsive">
-          <table class="table table-striped table-hover align-middle mb-0">
-            <thead class="table-light">
-              <tr>
-                <th>Date</th>
-                <th>Mode</th>
-                <th>Champion</th>
-                <th>Role</th>
-                <th>Result</th>
-                <th>K / D / A</th>
-                <th>Duration</th>
-                <th>Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              <% matches.forEach(match => { %>
-                <tr>
-                  <td><%= match.played_at %></td>
-                  <td><%= match.mode %></td>
-                  <td><%= match.champion %></td>
-                  <td><%= match.role %></td>
-
-                  <td>
-                    <span class="badge <%= match.result === 'Win' ? 'bg-success' : 'bg-danger' %>">
-                      <%= match.result %>
-                    </span>
-                  </td>
-
-                  <td>
-                    <%= match.kills %> / <%= match.deaths %> / <%= match.assists %>
-                  </td>
-
-                  <td>
-                    <%= match.game_duration_sec
-                      ? Math.floor(match.game_duration_sec / 60) + ':' +
-                        String(match.game_duration_sec % 60).padStart(2, '0')
-                      : '-' %>
-                  </td>
-
-                  <td>
-                    <div class="d-flex gap-2 flex-wrap">
-                      <a href="/matches/<%= match.id %>" class="btn btn-sm btn-outline-primary">
-                        View
-                      </a>
-
-                      <a href="/matches/<%= match.id %>/edit" class="btn btn-sm btn-outline-dark">
-                        Edit
-                      </a>
-
-                      <form action="/matches/<%= match.id %>/delete" method="post" class="d-inline">
-                        <button type="submit" class="btn btn-sm btn-outline-danger">
-                          Delete
-                        </button>
-                      </form>
-                    </div>
-                  </td>
-                </tr>
-              <% }) %>
-            </tbody>
-          </table>
+      <% if (!username && matches.length===0) { %>
+        <div class="card shadow-sm">
+          <div class="card-body text-center py-5">
+            <h2 class="h5 text-dark">No matches yet</h2>
+            <p class="text-muted mb-0">Start by adding your first match.</p>
+            <a href="/matches/new" class="btn btn-primary mt-2">Add Match</a>
+          </div>
         </div>
-      </div>
-    </div>
-  <% } %>
+
+        <% } else if (matches.length===0) { %>
+          <div class="card shadow-sm">
+            <div class="card-body text-center py-5">
+              <h2 class="h5 text-dark">No matches found</h2>
+              <p class="text-muted">There are currently no recorded matches for this user.</p>
+              <a href="/matches/new" class="btn btn-primary">Add Match</a>
+            </div>
+          </div>
+
+          <% } else { %>
+            <div class="card shadow-sm">
+              <div class="card-body p-0">
+                <div class="table-responsive">
+                  <table class="table table-striped table-hover align-middle mb-0">
+                    <thead class="table-light">
+                      <tr>
+                        <th>Date</th>
+                        <th>Mode</th>
+                        <th>Champion</th>
+                        <th>Role</th>
+                        <th>Result</th>
+                        <th>K / D / A</th>
+                        <th>Duration</th>
+                        <th>Actions</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <% matches.forEach(match=> { %>
+                        <tr>
+                          <td>
+                            <%= match.played_at %>
+                          </td>
+                          <td>
+                            <%= match.mode %>
+                          </td>
+                          <td>
+                            <%= match.champion %>
+                          </td>
+                          <td>
+                            <%= match.role %>
+                          </td>
+
+                          <td>
+                            <span class="badge <%= match.result === 'Win' ? 'bg-success' : 'bg-danger' %>">
+                              <%= match.result %>
+                            </span>
+                          </td>
+
+                          <td>
+                            <%= match.kills %> / <%= match.deaths %> / <%= match.assists %>
+                          </td>
+
+                          <td>
+                            <%= match.game_duration_sec ? Math.floor(match.game_duration_sec / 60) + ':' +
+                              String(match.game_duration_sec % 60).padStart(2, '0' ) : '-' %>
+                          </td>
+
+                          <td>
+                            <div class="d-flex gap-2 flex-wrap">
+                              <a href="/matches/<%= match.id %>" class="btn btn-sm btn-outline-primary">
+                                View
+                              </a>
+
+                              <a href="/matches/<%= match.id %>/edit" class="btn btn-sm btn-outline-dark">
+                                Edit
+                              </a>
+
+                              <form action="/matches/<%= match.id %>/delete" method="post" class="d-inline">
+                                <button type="submit" class="btn btn-sm btn-outline-danger">
+                                  Delete
+                                </button>
+                              </form>
+                            </div>
+                          </td>
+                        </tr>
+                        <% }) %>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+            <% } %>
 </div>

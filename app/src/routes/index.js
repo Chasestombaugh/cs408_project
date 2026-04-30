@@ -9,15 +9,23 @@ router.get('/', function(req, res, next) {
 /* Match list page */
 router.get('/matches', function(req, res, next) {
   const username = req.query.user ? req.query.user.trim() : '';
+  const champion = req.query.champion ? req.query.champion.trim() : '';
 
-  const matches = username
-    ? req.db.getMatchesByUsername(username)
-    : req.db.getAllMatches();
+  let matches;
+
+  if (username && champion) {
+    matches = req.db.getMatchesByUserAndChampion(username, champion);
+  } else if (username) {
+    matches = req.db.getMatchesByUsername(username);
+  } else {
+    matches = req.db.getAllMatches();
+  }
 
   res.render('matches', {
     title: 'Matches',
     matches,
     username,
+    champion,
   });
 });
 
