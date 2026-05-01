@@ -148,19 +148,27 @@ function createDatabaseManager(dbPath) {
         return info.changes; // number of rows updated
       },
 
-      getStatsByUsername: (username, limit = null) => {
+      getStatsByUsername: (username, limit = null, champion = '') => {
         ensureConnected();
+
+        const whereClause = champion
+          ? 'WHERE username = ? AND champion = ?'
+          : 'WHERE username = ?';
 
         const baseQuery = `
           SELECT *
           FROM matches
-          WHERE username = ?
+          ${whereClause}
           ORDER BY played_at DESC, id DESC
         `;
 
+        const queryParams = champion
+          ? [username, champion]
+          : [username];
+
         const matches = limit
-          ? database.prepare(baseQuery + ' LIMIT ?').all(username, limit)
-          : database.prepare(baseQuery).all(username);
+          ? database.prepare(baseQuery + ' LIMIT ?').all(...queryParams, limit)
+          : database.prepare(baseQuery).all(...queryParams);
 
         const totalMatches = matches.length;
         const wins = matches.filter(match => match.result === 'Win').length;
@@ -223,6 +231,7 @@ function createDatabaseManager(dbPath) {
 
         return {
           username,
+          champion,
           totalMatches,
           wins,
           losses,

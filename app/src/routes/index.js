@@ -188,17 +188,19 @@ router.post('/matches/:id/delete', function(req, res, next) {
 /* Stats page */
 router.get('/stats', function(req, res, next) {
   const username = req.query.user ? req.query.user.trim() : '';
+  const champion = req.query.champion ? req.query.champion.trim() : '';
   const range = req.query.range || 'all';
 
   const limit = range === 'all' ? null : parseInt(range, 10);
 
   const stats = username
-    ? req.db.getStatsByUsername(username, limit)
+    ? req.db.getStatsByUsername(username, limit, champion)
     : null;
 
   res.render('stats', {
     title: 'Statistics',
     username,
+    champion,
     stats,
     range,
   });

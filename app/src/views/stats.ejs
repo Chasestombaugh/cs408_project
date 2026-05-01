@@ -48,9 +48,20 @@
 
           <% } else { %>
             <p class="mb-4 text-light">
-              Viewing stats for: <strong class="text-gold">
-                <%= username %>
-              </strong>
+              Viewing stats for:
+              <strong class="text-gold"><%= username %></strong>
+
+              <% if (champion) { %>
+                <span class="text-light opacity-75"> • Champion:</span>
+                <strong class="text-gold"><%= champion %></strong>
+
+                <a
+                  href="/stats?user=<%= encodeURIComponent(username) %>&range=<%= encodeURIComponent(range) %>"
+                  class="ms-2 text-light opacity-75"
+                >
+                  Clear filter
+                </a>
+              <% } %>
             </p>
 
             <div class="row g-3 mb-4">
@@ -162,10 +173,24 @@
                         <ul class="list-group list-group-flush">
                           <% stats.mostPlayedChampions.slice(0, 5).forEach(item=> { %>
                             <li class="list-group-item d-flex justify-content-between align-items-center px-0">
-                              <a href="/matches?user=<%= encodeURIComponent(username) %>&champion=<%= encodeURIComponent(item.champion) %>"
-                                class="text-decoration-none text-dark">
-                                <%= item.champion %>
-                              </a>
+                              <div>
+                                <a
+                                  href="/stats?user=<%= encodeURIComponent(username) %>&champion=<%= encodeURIComponent(item.champion) %>&range=<%= encodeURIComponent(range) %>"
+                                  class="text-decoration-none text-dark fw-semibold"
+                                >
+                                  <%= item.champion %>
+                                </a>
+
+                                <div>
+                                  <a
+                                    href="/matches?user=<%= encodeURIComponent(username) %>&champion=<%= encodeURIComponent(item.champion) %>"
+                                    class="small text-muted"
+                                  >
+                                    View matches
+                                  </a>
+                                </div>
+                              </div>
+
                               <span class="badge bg-dark px-2 py-1">
                                 <%= item.count %>
                               </span>
