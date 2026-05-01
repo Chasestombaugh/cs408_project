@@ -245,7 +245,7 @@ function createDatabaseManager(dbPath) {
           averageDamageTaken,
           modeStats,
           mostPlayedChampions,
-          recentMatches: matches.slice(0, 5),
+          recentMatches: matches.slice(0, 20),
         };
       },
 
