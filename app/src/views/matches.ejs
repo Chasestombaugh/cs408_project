@@ -1,4 +1,7 @@
+<!-- Matches list page layout -->
 <div class="container py-5">
+
+  <!-- Page header and username search form -->
   <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-end gap-3 mb-4">
     <div>
       <h1 class="mb-1 text-gold">
@@ -7,12 +10,14 @@
       <p class="text-light opacity-75 mb-0">View recorded matches by username.</p>
     </div>
 
+    <!-- Filter matches by username using a query string -->
     <form action="/matches" method="get" class="d-flex gap-2">
       <input type="text" name="user" class="form-control" placeholder="Enter username" value="<%= username %>" />
       <button type="submit" class="btn btn-primary">View</button>
     </form>
   </div>
 
+  <!-- Show active filters when the match list is filtered -->
   <% if (username) { %>
     <p class="mb-4 text-light">
       Viewing matches for:
@@ -44,6 +49,7 @@
     </p>
     <% } %>
 
+      <!-- Empty state when there are no matches in the database yet -->
       <% if (!username && matches.length===0) { %>
         <div class="card shadow-sm">
           <div class="card-body text-center py-5">
@@ -53,6 +59,7 @@
           </div>
         </div>
 
+        <!-- Empty state when a specific filter/user has no results -->
         <% } else if (matches.length===0) { %>
           <div class="card shadow-sm">
             <div class="card-body text-center py-5">
@@ -62,6 +69,7 @@
             </div>
           </div>
 
+          <!-- Match table shown when matching records exist -->
           <% } else { %>
             <div class="card shadow-sm">
               <div class="card-body p-0">
@@ -79,37 +87,45 @@
                         <th>Actions</th>
                       </tr>
                     </thead>
+
                     <tbody>
                       <% matches.forEach(match=> { %>
                         <tr>
                           <td>
                             <%= match.played_at %>
                           </td>
+
                           <td>
                             <%= match.mode %>
                           </td>
+
                           <td>
                             <%= match.champion %>
                           </td>
+
                           <td>
                             <%= match.role %>
                           </td>
 
+                          <!-- Result badge changes color based on win/loss -->
                           <td>
                             <span class="badge <%= match.result === 'Win' ? 'bg-success' : 'bg-danger' %>">
                               <%= match.result %>
                             </span>
                           </td>
 
+                          <!-- KDA summary -->
                           <td>
                             <%= match.kills %> / <%= match.deaths %> / <%= match.assists %>
                           </td>
 
+                          <!-- Convert stored duration seconds into mm:ss format -->
                           <td>
                             <%= match.game_duration_sec ? Math.floor(match.game_duration_sec / 60) + ':' +
                               String(match.game_duration_sec % 60).padStart(2, '0' ) : '-' %>
                           </td>
 
+                          <!-- Per-match actions -->
                           <td>
                             <div class="d-flex gap-2 flex-wrap">
                               <a href="/matches/<%= match.id %>" class="btn btn-sm btn-outline-primary">

@@ -1,7 +1,9 @@
+<!-- Match Detail page layout -->
 <div class="container py-5">
   <div class="row justify-content-center">
     <div class="col-lg-10 col-xl-8">
 
+      <!-- Page header with title and navigation actions -->
       <div class="d-flex justify-content-between align-items-center mb-4">
         <div>
           <h1 class="mb-1 text-gold">
@@ -10,6 +12,7 @@
           <p class="text-light opacity-75 mb-0">View full details for a recorded match.</p>
         </div>
 
+        <!-- Show edit button only if match exists -->
         <div class="d-flex gap-2">
           <% if (match) { %>
             <a href="/matches/<%= match.id %>/edit" class="btn btn-outline-light">Edit Match</a>
@@ -18,6 +21,7 @@
         </div>
       </div>
 
+      <!-- Error state if match is invalid or not found -->
       <% if (error) { %>
         <div class="card shadow-sm">
           <div class="card-body text-center py-5 text-dark">
@@ -28,11 +32,15 @@
             <a href="/matches" class="btn btn-primary">Return to Matches</a>
           </div>
         </div>
+
+        <!-- Main match display when data exists -->
         <% } else if (match) { %>
 
           <div class="card shadow-sm mb-4">
             <div class="card-body text-dark">
               <div class="row g-4">
+
+                <!-- Basic match information section -->
                 <div class="col-md-6">
                   <h2 class="h5 mb-3 text-gold">Basic Match Information</h2>
 
@@ -52,6 +60,7 @@
                     <%= match.role %>
                   </p>
 
+                  <!-- Result badge changes color based on win/loss -->
                   <p class="mb-2">
                     <strong>Result:</strong>
                     <span class="badge <%= match.result === 'Win' ? 'bg-success' : 'bg-danger' %>">
@@ -59,11 +68,13 @@
                     </span>
                   </p>
 
+                  <!-- KDA display -->
                   <p class="mb-2">
                     <strong>K / D / A:</strong>
                     <%= match.kills %> / <%= match.deaths %> / <%= match.assists %>
                   </p>
 
+                  <!-- Convert stored seconds into mm:ss format -->
                   <p class="mb-0">
                     <strong>Duration:</strong>
                     <%= match.game_duration_sec ? Math.floor(match.game_duration_sec / 60) + ':' +
@@ -71,39 +82,49 @@
                   </p>
                 </div>
 
+                <!-- Advanced statistics section -->
                 <div class="col-md-6">
                   <h2 class="h5 mb-3 text-gold">Advanced Statistics</h2>
 
-                  <% const hasAdvancedStats=match.game_duration_sec !==null || match.total_gold !==null ||
-                    match.total_cs !==null || match.damage_dealt !==null || match.damage_taken !==null ||
-                    match.vision_score !==null; %>
+                  <% /* Check if any advanced stats exist before displaying */ %>
+                    <% const hasAdvancedStats=match.game_duration_sec !==null || match.total_gold !==null ||
+                      match.total_cs !==null || match.damage_dealt !==null || match.damage_taken !==null ||
+                      match.vision_score !==null; %>
 
-                    <% if (hasAdvancedStats) { %>
-                      <p class="mb-2"><strong>Total Gold:</strong>
-                        <%= match.total_gold !==null ? match.total_gold.toLocaleString() : '-' %>
-                      </p>
-                      <p class="mb-2"><strong>Total CS:</strong>
-                        <%= match.total_cs !==null ? match.total_cs.toLocaleString() : '-' %>
-                      </p>
-                      <p class="mb-2"><strong>Damage Dealt:</strong>
-                        <%= match.damage_dealt !==null ? match.damage_dealt.toLocaleString() : '-' %>
-                      </p>
-                      <p class="mb-2"><strong>Damage Taken:</strong>
-                        <%= match.damage_taken !==null ? match.damage_taken.toLocaleString() : '-' %>
-                      </p>
-                      <p class="mb-0"><strong>Vision Score:</strong>
-                        <%= match.vision_score ?? '-' %>
-                      </p>
-                      <% } else { %>
-                        <div class="alert alert-secondary mb-0">
-                          Advanced stats were not recorded for this match.
-                        </div>
-                        <% } %>
+                      <% if (hasAdvancedStats) { %>
+                        <p class="mb-2"><strong>Total Gold:</strong>
+                          <%= match.total_gold !==null ? match.total_gold.toLocaleString() : '-' %>
+                        </p>
+
+                        <p class="mb-2"><strong>Total CS:</strong>
+                          <%= match.total_cs !==null ? match.total_cs.toLocaleString() : '-' %>
+                        </p>
+
+                        <p class="mb-2"><strong>Damage Dealt:</strong>
+                          <%= match.damage_dealt !==null ? match.damage_dealt.toLocaleString() : '-' %>
+                        </p>
+
+                        <p class="mb-2"><strong>Damage Taken:</strong>
+                          <%= match.damage_taken !==null ? match.damage_taken.toLocaleString() : '-' %>
+                        </p>
+
+                        <p class="mb-0"><strong>Vision Score:</strong>
+                          <%= match.vision_score ?? '-' %>
+                        </p>
+
+                        <% } else { %>
+                          <!-- Fallback if no advanced stats were recorded -->
+                          <div class="alert alert-secondary mb-0">
+                            Advanced stats were not recorded for this match.
+                          </div>
+                          <% } %>
                 </div>
+
               </div>
             </div>
           </div>
 
+          <!-- Notes section -->
           <div class="card shadow-sm">
             <div class="card-body text-dark">
               <h2 class="h5 mb-3 text-gold">Notes</h2>
@@ -113,6 +134,7 @@
                   <%= match.notes %>
                 </p>
                 <% } else { %>
+                  <!-- Fallback if no notes were provided -->
                   <p class="text-muted mb-0">No notes were recorded for this match.</p>
                   <% } %>
             </div>

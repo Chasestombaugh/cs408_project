@@ -1,7 +1,9 @@
+<!-- Stats page layout -->
 <div class="container py-5">
   <div class="row justify-content-center">
     <div class="col-lg-10">
 
+      <!-- Page header and stats filter form -->
       <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-end gap-3 mb-4">
         <div>
           <h1 class="mb-1 text-gold">
@@ -12,10 +14,12 @@
           </p>
         </div>
 
+        <!-- Filter stats by username and time range -->
         <form action="/stats" method="get" class="d-flex gap-2">
           <input type="text" name="user" class="form-control" placeholder="Enter username"
             value="<%= username || '' %>" />
 
+          <!-- Range determines how many recent matches are used -->
           <select name="range" class="form-select" style="max-width: 140px;">
             <option value="all" <%=range==='all' ? 'selected' : '' %>>All Time</option>
             <option value="20" <%=range==='20' ? 'selected' : '' %>>Last 20</option>
@@ -27,6 +31,7 @@
         </form>
       </div>
 
+      <!-- No username entered -->
       <% if (!username) { %>
         <div class="card shadow-sm">
           <div class="card-body text-center py-5 text-dark">
@@ -35,6 +40,7 @@
           </div>
         </div>
 
+        <!-- No matches found for this user -->
         <% } else if (!stats || stats.totalMatches===0) { %>
           <div class="card shadow-sm">
             <div class="card-body text-center py-5 text-dark">
@@ -46,7 +52,10 @@
             </div>
           </div>
 
+          <!-- Main stats display -->
           <% } else { %>
+
+            <!-- Active filters display -->
             <p class="mb-4 text-light">
               Viewing stats for:
               <strong class="text-gold">
@@ -67,6 +76,7 @@
                     </strong>
                     <% } %>
 
+                      <!-- Clear filters link -->
                       <% if (champion || mode) { %>
                         <a href="/stats?user=<%= encodeURIComponent(username) %>&range=<%= encodeURIComponent(range) %>"
                           class="ms-2 text-light opacity-75">
@@ -75,7 +85,10 @@
                         <% } %>
             </p>
 
+            <!-- Summary stat cards -->
             <div class="row g-3 mb-4">
+
+              <!-- Total matches -->
               <div class="col-md-3">
                 <div class="card shadow-sm h-100">
                   <div class="card-body text-dark">
@@ -87,6 +100,7 @@
                 </div>
               </div>
 
+              <!-- Win rate -->
               <div class="col-md-3">
                 <div class="card shadow-sm h-100">
                   <div class="card-body text-dark">
@@ -101,6 +115,7 @@
                 </div>
               </div>
 
+              <!-- Average KDA -->
               <div class="col-md-3">
                 <div class="card shadow-sm h-100">
                   <div class="card-body text-dark">
@@ -112,21 +127,28 @@
                 </div>
               </div>
 
+              <!-- Derived advanced averages -->
               <div class="col-md-3">
                 <div class="card shadow-sm h-100">
                   <div class="card-body text-dark">
                     <p class="text-muted mb-1">Average Stats</p>
+
+                    <!-- Derived metrics like GPM and CSM -->
                     <h2 class="h6 mb-1">
                       GPM:
                       <%= stats.averageGpm !==null ? Number(stats.averageGpm).toLocaleString(undefined, {
                         maximumFractionDigits: 0 }) : '-' %>
                     </h2>
-                    <h2 class="h6 mb-1">CSM: <%= stats.averageCsm ?? '-' %>
+
+                    <h2 class="h6 mb-1">
+                      CSM: <%= stats.averageCsm ?? '-' %>
                     </h2>
+
                     <h2 class="h6 mb-1">
                       Damage Dealt:
                       <%= stats.averageDamageDealt !==null ? stats.averageDamageDealt.toLocaleString() : '-' %>
                     </h2>
+
                     <h2 class="h6 mb-0">
                       Damage Taken:
                       <%= stats.averageDamageTaken !==null ? stats.averageDamageTaken.toLocaleString() : '-' %>
@@ -136,7 +158,10 @@
               </div>
             </div>
 
+            <!-- Mode and champion breakdowns -->
             <div class="row g-4">
+
+              <!-- Matches by mode -->
               <div class="col-lg-6">
                 <div class="card shadow-sm h-100">
                   <div class="card-body text-dark">
@@ -147,6 +172,7 @@
                       <% if (modeEntries.length===0) { %>
                         <p class="text-muted mb-0">No mode data available.</p>
                         <% } else { %>
+
                           <ul class="list-group list-group-flush">
                             <% modeEntries.forEach(([mode, data])=> {
                               const winRate = data.total > 0
@@ -154,15 +180,21 @@
                               : 0;
                               %>
                               <li class="list-group-item d-flex justify-content-between align-items-center px-0">
+
+                                <!-- Clickable mode filter -->
                                 <span>
                                   <a href="/stats?user=<%= encodeURIComponent(username) %>&mode=<%= encodeURIComponent(mode) %>&range=<%= encodeURIComponent(range) %>"
                                     class="text-decoration-none text-dark fw-semibold">
                                     <%= mode %>
                                   </a>
+
                                   <br>
+
                                   <small class="text-muted">
                                     <%= data.wins %>W / <%= data.total - data.wins %>L • <%= winRate %>%
                                   </small>
+
+                                  <!-- Link back to match list -->
                                   <div>
                                     <a href="/matches?user=<%= encodeURIComponent(username) %>&mode=<%= encodeURIComponent(mode) %>"
                                       class="small text-muted">
@@ -170,17 +202,20 @@
                                     </a>
                                   </div>
                                 </span>
+
                                 <span class="badge bg-dark px-2 py-1">
                                   <%= data.total %>
                                 </span>
                               </li>
                               <% }) %>
                           </ul>
+
                           <% } %>
                   </div>
                 </div>
               </div>
 
+              <!-- Most played champions -->
               <div class="col-lg-6">
                 <div class="card shadow-sm h-100">
                   <div class="card-body text-dark">
@@ -189,10 +224,13 @@
                     <% if (!stats.mostPlayedChampions || stats.mostPlayedChampions.length===0) { %>
                       <p class="text-muted mb-0">No champion data available.</p>
                       <% } else { %>
+
                         <ul class="list-group list-group-flush">
                           <% stats.mostPlayedChampions.slice(0, 5).forEach(item=> { %>
                             <li class="list-group-item d-flex justify-content-between align-items-center px-0">
+
                               <div>
+                                <!-- Filter by champion -->
                                 <a href="/stats?user=<%= encodeURIComponent(username) %>&champion=<%= encodeURIComponent(item.champion) %>&range=<%= encodeURIComponent(range) %>"
                                   class="text-decoration-none text-dark fw-semibold">
                                   <%= item.champion %>
@@ -212,12 +250,14 @@
                             </li>
                             <% }) %>
                         </ul>
+
                         <% } %>
                   </div>
                 </div>
               </div>
             </div>
 
+            <!-- Recent matches table -->
             <div class="card shadow-sm mt-4">
               <div class="card-body p-0 text-dark">
                 <div class="p-3 border-bottom">
@@ -236,6 +276,7 @@
                         <th>View</th>
                       </tr>
                     </thead>
+
                     <tbody>
                       <% stats.recentMatches.forEach(match=> { %>
                         <tr>
@@ -248,20 +289,25 @@
                           <td>
                             <%= match.champion %>
                           </td>
+
+                          <!-- Result badge -->
                           <td>
                             <span class="badge <%= match.result === 'Win' ? 'bg-success' : 'bg-danger' %>">
                               <%= match.result %>
                             </span>
                           </td>
+
                           <td>
                             <%= match.kills %> / <%= match.deaths %> / <%= match.assists %>
                           </td>
+
                           <td>
                             <a href="/matches/<%= match.id %>" class="btn btn-sm btn-outline-primary">View</a>
                           </td>
                         </tr>
                         <% }) %>
                     </tbody>
+
                   </table>
                 </div>
               </div>

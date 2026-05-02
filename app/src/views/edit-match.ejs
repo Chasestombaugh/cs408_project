@@ -1,3 +1,4 @@
+<!-- Edit Match page layout -->
 <div class="container py-5">
   <div class="row justify-content-center">
     <div class="col-lg-10 col-xl-8">
@@ -11,151 +12,162 @@
         <a href="/matches/<%= match.id %>" class="btn btn-dark">Back to Match</a>
       </div>
 
-      <% const values=typeof formData !=='undefined' ? formData : {}; %>
-        <% const errorList=Array.isArray(errors) ? errors : []; %>
+      <% /* Preserve submitted form data after validation errors, or use the existing match data. */ %>
+        <% const values=typeof formData !=='undefined' ? formData : {}; %>
+          <% const errorList=Array.isArray(errors) ? errors : []; %>
 
-          <% if (errorList.length> 0) { %>
-            <div class="alert alert-danger">
-              <h2 class="h6 mb-2">Please fix the following:</h2>
-              <ul class="mb-0">
-                <% errorList.forEach(error=> { %>
-                  <li>
-                    <%= error %>
-                  </li>
-                  <% }) %>
-              </ul>
-            </div>
-            <% } %>
+            <% /* Display validation errors returned from the edit route. */ %>
+              <% if (errorList.length> 0) { %>
+                <div class="alert alert-danger">
+                  <h2 class="h6 mb-2">Please fix the following:</h2>
+                  <ul class="mb-0">
+                    <% errorList.forEach(error=> { %>
+                      <li>
+                        <%= error %>
+                      </li>
+                      <% }) %>
+                  </ul>
+                </div>
+                <% } %>
 
-              <div class="card shadow-sm">
-                <div class="card-body text-dark">
-                  <form action="/matches/<%= match.id %>/edit" method="post" class="row g-3">
-                    <div class="col-md-6">
-                      <label for="username" class="form-label">Username</label>
-                      <input type="text" class="form-control" id="username" name="username"
-                        value="<%= values.username || '' %>" required>
-                    </div>
+                  <div class="card shadow-sm">
+                    <div class="card-body text-dark">
 
-                    <div class="col-md-6">
-                      <label for="played_at" class="form-label">Date Played</label>
-                      <input type="date" class="form-control" id="played_at" name="played_at"
-                        value="<%= values.played_at || '' %>" required>
-                    </div>
+                      <!-- Edit form posts changes back to this match's edit route. -->
+                      <form action="/matches/<%= match.id %>/edit" method="post" class="row g-3">
 
-                    <div class="col-md-4">
-                      <label for="mode" class="form-label">Mode</label>
-                      <select class="form-select" id="mode" name="mode" required>
-                        <option value="">Select mode</option>
-                        <option value="SR" <%=values.mode==='SR' ? 'selected' : '' %>>Summoner's Rift</option>
-                        <option value="ARAM" <%=values.mode==='ARAM' ? 'selected' : '' %>>ARAM</option>
-                      </select>
-                    </div>
+                        <!-- Basic match information, pre-filled from the saved match. -->
+                        <div class="col-md-6">
+                          <label for="username" class="form-label">Username</label>
+                          <input type="text" class="form-control" id="username" name="username"
+                            value="<%= values.username || '' %>" required>
+                        </div>
 
-                    <div class="col-md-4">
-                      <label for="champion" class="form-label">Champion</label>
-                      <input type="text" class="form-control" id="champion" name="champion"
-                        value="<%= values.champion || '' %>" required>
-                    </div>
+                        <div class="col-md-6">
+                          <label for="played_at" class="form-label">Date Played</label>
+                          <input type="date" class="form-control" id="played_at" name="played_at"
+                            value="<%= values.played_at || '' %>" required>
+                        </div>
 
-                    <div class="col-md-4" id="roleFieldWrapper">
-                      <label for="role" class="form-label">Role</label>
-                      <select class="form-select" id="role" name="role">
-                        <option value="">Select role</option>
-                        <option value="Top" <%=values.role==='Top' ? 'selected' : '' %>>Top</option>
-                        <option value="Jungle" <%=values.role==='Jungle' ? 'selected' : '' %>>Jungle</option>
-                        <option value="Mid" <%=values.role==='Mid' ? 'selected' : '' %>>Mid</option>
-                        <option value="ADC" <%=values.role==='ADC' ? 'selected' : '' %>>ADC</option>
-                        <option value="Support" <%=values.role==='Support' ? 'selected' : '' %>>Support</option>
-                      </select>
-                      <div class="form-text">Role is required for Summoner's Rift and ignored for ARAM.</div>
-                    </div>
+                        <div class="col-md-4">
+                          <label for="mode" class="form-label">Mode</label>
+                          <select class="form-select" id="mode" name="mode" required>
+                            <option value="">Select mode</option>
+                            <option value="SR" <%=values.mode==='SR' ? 'selected' : '' %>>Summoner's Rift</option>
+                            <option value="ARAM" <%=values.mode==='ARAM' ? 'selected' : '' %>>ARAM</option>
+                          </select>
+                        </div>
 
-                    <div class="col-md-4">
-                      <label for="result" class="form-label">Result</label>
-                      <select class="form-select" id="result" name="result" required>
-                        <option value="">Select result</option>
-                        <option value="Win" <%=values.result==='Win' ? 'selected' : '' %>>Win</option>
-                        <option value="Loss" <%=values.result==='Loss' ? 'selected' : '' %>>Loss</option>
-                      </select>
-                    </div>
+                        <div class="col-md-4">
+                          <label for="champion" class="form-label">Champion</label>
+                          <input type="text" class="form-control" id="champion" name="champion"
+                            value="<%= values.champion || '' %>" required>
+                        </div>
 
-                    <div class="col-md-4">
-                      <label for="kills" class="form-label">Kills</label>
-                      <input type="number" min="0" class="form-control" id="kills" name="kills"
-                        value="<%= values.kills ?? '' %>" required>
-                    </div>
+                        <!-- Role is required for Summoner's Rift but hidden for ARAM. -->
+                        <div class="col-md-4" id="roleFieldWrapper">
+                          <label for="role" class="form-label">Role</label>
+                          <select class="form-select" id="role" name="role">
+                            <option value="">Select role</option>
+                            <option value="Top" <%=values.role==='Top' ? 'selected' : '' %>>Top</option>
+                            <option value="Jungle" <%=values.role==='Jungle' ? 'selected' : '' %>>Jungle</option>
+                            <option value="Mid" <%=values.role==='Mid' ? 'selected' : '' %>>Mid</option>
+                            <option value="ADC" <%=values.role==='ADC' ? 'selected' : '' %>>ADC</option>
+                            <option value="Support" <%=values.role==='Support' ? 'selected' : '' %>>Support</option>
+                          </select>
+                          <div class="form-text">Role is required for Summoner's Rift and ignored for ARAM.</div>
+                        </div>
 
-                    <div class="col-md-4">
-                      <label for="deaths" class="form-label">Deaths</label>
-                      <input type="number" min="0" class="form-control" id="deaths" name="deaths"
-                        value="<%= values.deaths ?? '' %>" required>
-                    </div>
+                        <!-- Required result and KDA fields. -->
+                        <div class="col-md-4">
+                          <label for="result" class="form-label">Result</label>
+                          <select class="form-select" id="result" name="result" required>
+                            <option value="">Select result</option>
+                            <option value="Win" <%=values.result==='Win' ? 'selected' : '' %>>Win</option>
+                            <option value="Loss" <%=values.result==='Loss' ? 'selected' : '' %>>Loss</option>
+                          </select>
+                        </div>
 
-                    <div class="col-md-4">
-                      <label for="assists" class="form-label">Assists</label>
-                      <input type="number" min="0" class="form-control" id="assists" name="assists"
-                        value="<%= values.assists ?? '' %>" required>
-                    </div>
+                        <div class="col-md-4">
+                          <label for="kills" class="form-label">Kills</label>
+                          <input type="number" min="0" class="form-control" id="kills" name="kills"
+                            value="<%= values.kills ?? '' %>" required>
+                        </div>
 
-                    <div class="col-12">
-                      <label for="notes" class="form-label">Notes</label>
-                      <textarea class="form-control" id="notes" name="notes"
-                        rows="3"><%= values.notes || '' %></textarea>
-                    </div>
+                        <div class="col-md-4">
+                          <label for="deaths" class="form-label">Deaths</label>
+                          <input type="number" min="0" class="form-control" id="deaths" name="deaths"
+                            value="<%= values.deaths ?? '' %>" required>
+                        </div>
 
-                    <div class="col-12">
-                      <details class="border rounded p-3" open>
-                        <summary class="fw-semibold text-gold">Advanced Statistics (Optional)</summary>
+                        <div class="col-md-4">
+                          <label for="assists" class="form-label">Assists</label>
+                          <input type="number" min="0" class="form-control" id="assists" name="assists"
+                            value="<%= values.assists ?? '' %>" required>
+                        </div>
 
-                        <div class="row g-3 mt-2">
-                          <div class="col-md-4">
-                            <label for="game_duration" class="form-label">Game Duration (mm:ss)</label>
-                            <input type="text" class="form-control" id="game_duration" name="game_duration"
-                              placeholder="28:15" value="<%= values.game_duration || (values.game_duration_sec !== undefined && values.game_duration_sec !== null
+                        <div class="col-12">
+                          <label for="notes" class="form-label">Notes</label>
+                          <textarea class="form-control" id="notes" name="notes"
+                            rows="3"><%= values.notes || '' %></textarea>
+                        </div>
+
+                        <!-- Optional advanced stats are open by default on the edit page. -->
+                        <div class="col-12">
+                          <details class="border rounded p-3" open>
+                            <summary class="fw-semibold text-gold">Advanced Statistics (Optional)</summary>
+
+                            <div class="row g-3 mt-2">
+                              <div class="col-md-4">
+                                <label for="game_duration" class="form-label">Game Duration (mm:ss)</label>
+
+                                <% /* Convert stored duration seconds back into mm:ss for editing. */ %>
+                                  <input type="text" class="form-control" id="game_duration" name="game_duration"
+                                    placeholder="28:15" value="<%= values.game_duration || (values.game_duration_sec !== undefined && values.game_duration_sec !== null
                         ? Math.floor(values.game_duration_sec / 60) + ':' + String(values.game_duration_sec % 60).padStart(2, '0')
                         : '') %>">
-                          </div>
+                              </div>
 
-                          <div class="col-md-4">
-                            <label for="total_gold" class="form-label">Total Gold</label>
-                            <input type="number" min="0" class="form-control" id="total_gold" name="total_gold"
-                              value="<%= values.total_gold ?? '' %>">
-                          </div>
+                              <div class="col-md-4">
+                                <label for="total_gold" class="form-label">Total Gold</label>
+                                <input type="number" min="0" class="form-control" id="total_gold" name="total_gold"
+                                  value="<%= values.total_gold ?? '' %>">
+                              </div>
 
-                          <div class="col-md-4">
-                            <label for="total_cs" class="form-label">Total CS</label>
-                            <input type="number" min="0" class="form-control" id="total_cs" name="total_cs"
-                              value="<%= values.total_cs ?? '' %>">
-                          </div>
+                              <div class="col-md-4">
+                                <label for="total_cs" class="form-label">Total CS</label>
+                                <input type="number" min="0" class="form-control" id="total_cs" name="total_cs"
+                                  value="<%= values.total_cs ?? '' %>">
+                              </div>
 
-                          <div class="col-md-4">
-                            <label for="damage_dealt" class="form-label">Damage Dealt</label>
-                            <input type="number" min="0" class="form-control" id="damage_dealt" name="damage_dealt"
-                              value="<%= values.damage_dealt ?? '' %>">
-                          </div>
+                              <div class="col-md-4">
+                                <label for="damage_dealt" class="form-label">Damage Dealt</label>
+                                <input type="number" min="0" class="form-control" id="damage_dealt" name="damage_dealt"
+                                  value="<%= values.damage_dealt ?? '' %>">
+                              </div>
 
-                          <div class="col-md-4">
-                            <label for="damage_taken" class="form-label">Damage Taken</label>
-                            <input type="number" min="0" class="form-control" id="damage_taken" name="damage_taken"
-                              value="<%= values.damage_taken ?? '' %>">
-                          </div>
+                              <div class="col-md-4">
+                                <label for="damage_taken" class="form-label">Damage Taken</label>
+                                <input type="number" min="0" class="form-control" id="damage_taken" name="damage_taken"
+                                  value="<%= values.damage_taken ?? '' %>">
+                              </div>
 
-                          <div class="col-md-4">
-                            <label for="vision_score" class="form-label">Vision Score</label>
-                            <input type="number" min="0" class="form-control" id="vision_score" name="vision_score"
-                              value="<%= values.vision_score ?? '' %>">
-                          </div>
+                              <div class="col-md-4">
+                                <label for="vision_score" class="form-label">Vision Score</label>
+                                <input type="number" min="0" class="form-control" id="vision_score" name="vision_score"
+                                  value="<%= values.vision_score ?? '' %>">
+                              </div>
+                            </div>
+                          </details>
                         </div>
-                      </details>
-                    </div>
 
-                    <div class="col-12 d-flex gap-2 justify-content-end mt-3">
-                      <a href="/matches/<%= match.id %>" class="btn btn-dark">Cancel</a>
-                      <button type="submit" class="btn btn-primary">Save Changes</button>
+                        <div class="col-12 d-flex gap-2 justify-content-end mt-3">
+                          <a href="/matches/<%= match.id %>" class="btn btn-dark">Cancel</a>
+                          <button type="submit" class="btn btn-primary">Save Changes</button>
+                        </div>
+                      </form>
                     </div>
-                  </form>
-                </div>
-              </div>
+                  </div>
     </div>
   </div>
 </div>
@@ -167,21 +179,26 @@
   const durationInput = document.getElementById('game_duration');
   const visionScoreInput = document.getElementById('vision_score');
 
+  // Updates the role field based on selected game mode.
   function updateRoleField() {
     if (modeSelect.value === 'ARAM') {
+      // ARAM does not use roles, so hide and clear the role input.
       roleFieldWrapper.style.display = 'none';
       roleSelect.value = '';
       roleSelect.required = false;
 
+      // Vision score is usually not relevant for ARAM, so default it to 0.
       if (visionScoreInput && visionScoreInput.value === '') {
         visionScoreInput.value = '0';
       }
     } else {
+      // Summoner's Rift requires a role.
       roleFieldWrapper.style.display = '';
       roleSelect.required = true;
     }
   }
 
+  // Formats typed duration digits into mm:ss.
   function formatDurationInput() {
     if (!durationInput) return;
 
