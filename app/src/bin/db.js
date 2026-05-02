@@ -148,23 +148,28 @@ function createDatabaseManager(dbPath) {
         return info.changes; // number of rows updated
       },
 
-      getStatsByUsername: (username, limit = null, champion = '') => {
+      getStatsByUsername: (username, limit = null, champion = '', mode = '') => {
         ensureConnected();
 
-        const whereClause = champion
-          ? 'WHERE username = ? AND champion = ?'
-          : 'WHERE username = ?';
+        const conditions = ['username = ?'];
+        const queryParams = [username];
+
+        if (champion) {
+          conditions.push('champion = ?');
+          queryParams.push(champion);
+        }
+
+        if (mode) {
+          conditions.push('mode = ?');
+          queryParams.push(mode);
+        }
 
         const baseQuery = `
-          SELECT *
-          FROM matches
-          ${whereClause}
-          ORDER BY played_at DESC, id DESC
-        `;
-
-        const queryParams = champion
-          ? [username, champion]
-          : [username];
+    SELECT *
+    FROM matches
+    WHERE ${conditions.join(' AND ')}
+    ORDER BY played_at DESC, id DESC
+  `;
 
         const matches = limit
           ? database.prepare(baseQuery + ' LIMIT ?').all(...queryParams, limit)
@@ -236,6 +241,7 @@ function createDatabaseManager(dbPath) {
           wins,
           losses,
           winRate,
+          mode,
           averageKills: totalMatches > 0 ? (totalKills / totalMatches).toFixed(1) : '0.0',
           averageDeaths: totalMatches > 0 ? (totalDeaths / totalMatches).toFixed(1) : '0.0',
           averageAssists: totalMatches > 0 ? (totalAssists / totalMatches).toFixed(1) : '0.0',

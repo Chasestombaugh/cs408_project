@@ -49,19 +49,30 @@
           <% } else { %>
             <p class="mb-4 text-light">
               Viewing stats for:
-              <strong class="text-gold"><%= username %></strong>
+              <strong class="text-gold">
+                <%= username %>
+              </strong>
 
               <% if (champion) { %>
                 <span class="text-light opacity-75"> • Champion:</span>
-                <strong class="text-gold"><%= champion %></strong>
+                <strong class="text-gold">
+                  <%= champion %>
+                </strong>
+                <% } %>
 
-                <a
-                  href="/stats?user=<%= encodeURIComponent(username) %>&range=<%= encodeURIComponent(range) %>"
-                  class="ms-2 text-light opacity-75"
-                >
-                  Clear filter
-                </a>
-              <% } %>
+                  <% if (mode) { %>
+                    <span class="text-light opacity-75"> • Mode:</span>
+                    <strong class="text-gold">
+                      <%= mode %>
+                    </strong>
+                    <% } %>
+
+                      <% if (champion || mode) { %>
+                        <a href="/stats?user=<%= encodeURIComponent(username) %>&range=<%= encodeURIComponent(range) %>"
+                          class="ms-2 text-light opacity-75">
+                          Clear filters
+                        </a>
+                      <% } %>
             </p>
 
             <div class="row g-3 mb-4">
@@ -144,12 +155,20 @@
                               %>
                               <li class="list-group-item d-flex justify-content-between align-items-center px-0">
                                 <span>
-                                  <strong>
+                                  <a href="/stats?user=<%= encodeURIComponent(username) %>&mode=<%= encodeURIComponent(mode) %>&range=<%= encodeURIComponent(range) %>"
+                                    class="text-decoration-none text-dark fw-semibold">
                                     <%= mode %>
-                                  </strong><br>
+                                  </a>
+                                  <br>
                                   <small class="text-muted">
                                     <%= data.wins %>W / <%= data.total - data.wins %>L • <%= winRate %>%
                                   </small>
+                                  <div>
+                                    <a href="/matches?user=<%= encodeURIComponent(username) %>&mode=<%= encodeURIComponent(mode) %>"
+                                      class="small text-muted">
+                                      View matches
+                                    </a>
+                                  </div>
                                 </span>
                                 <span class="badge bg-dark px-2 py-1">
                                   <%= data.total %>
@@ -174,18 +193,14 @@
                           <% stats.mostPlayedChampions.slice(0, 5).forEach(item=> { %>
                             <li class="list-group-item d-flex justify-content-between align-items-center px-0">
                               <div>
-                                <a
-                                  href="/stats?user=<%= encodeURIComponent(username) %>&champion=<%= encodeURIComponent(item.champion) %>&range=<%= encodeURIComponent(range) %>"
-                                  class="text-decoration-none text-dark fw-semibold"
-                                >
+                                <a href="/stats?user=<%= encodeURIComponent(username) %>&champion=<%= encodeURIComponent(item.champion) %>&range=<%= encodeURIComponent(range) %>"
+                                  class="text-decoration-none text-dark fw-semibold">
                                   <%= item.champion %>
                                 </a>
 
                                 <div>
-                                  <a
-                                    href="/matches?user=<%= encodeURIComponent(username) %>&champion=<%= encodeURIComponent(item.champion) %>"
-                                    class="small text-muted"
-                                  >
+                                  <a href="/matches?user=<%= encodeURIComponent(username) %>&champion=<%= encodeURIComponent(item.champion) %>"
+                                    class="small text-muted">
                                     View matches
                                   </a>
                                 </div>

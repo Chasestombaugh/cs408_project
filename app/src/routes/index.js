@@ -192,9 +192,10 @@ router.get('/stats', function(req, res, next) {
   const range = req.query.range || 'all';
 
   const limit = range === 'all' ? null : parseInt(range, 10);
+  const mode = req.query.mode ? req.query.mode.trim() : '';
 
   const stats = username
-    ? req.db.getStatsByUsername(username, limit, champion)
+    ? req.db.getStatsByUsername(username, limit, champion, mode)
     : null;
 
   res.render('stats', {
@@ -203,6 +204,7 @@ router.get('/stats', function(req, res, next) {
     champion,
     stats,
     range,
+    mode,
   });
 });
 
