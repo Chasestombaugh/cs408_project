@@ -119,7 +119,41 @@
                             <summary class="fw-semibold text-gold">Advanced Statistics (Optional)</summary>
 
                             <div class="row g-3 mt-2">
-                              <!-- advanced stat inputs stay the same here -->
+                              <div class="col-md-4">
+                                <label for="game_duration" class="form-label">Game Duration (mm:ss)</label>
+                                <input type="text" class="form-control" id="game_duration" name="game_duration"
+                                  placeholder="28:15" value="<%= values.game_duration || '' %>">
+                              </div>
+
+                              <div class="col-md-4">
+                                <label for="total_gold" class="form-label">Total Gold</label>
+                                <input type="number" min="0" class="form-control" id="total_gold" name="total_gold"
+                                  value="<%= values.total_gold || '' %>">
+                              </div>
+
+                              <div class="col-md-4">
+                                <label for="total_cs" class="form-label">Total CS</label>
+                                <input type="number" min="0" class="form-control" id="total_cs" name="total_cs"
+                                  value="<%= values.total_cs || '' %>">
+                              </div>
+
+                              <div class="col-md-4">
+                                <label for="damage_dealt" class="form-label">Damage Dealt</label>
+                                <input type="number" min="0" class="form-control" id="damage_dealt" name="damage_dealt"
+                                  value="<%= values.damage_dealt || '' %>">
+                              </div>
+
+                              <div class="col-md-4">
+                                <label for="damage_taken" class="form-label">Damage Taken</label>
+                                <input type="number" min="0" class="form-control" id="damage_taken" name="damage_taken"
+                                  value="<%= values.damage_taken || '' %>">
+                              </div>
+
+                              <div class="col-md-4">
+                                <label for="vision_score" class="form-label">Vision Score</label>
+                                <input type="number" min="0" class="form-control" id="vision_score" name="vision_score"
+                                  value="<%= values.vision_score || '' %>">
+                              </div>
                             </div>
                           </details>
                         </div>
