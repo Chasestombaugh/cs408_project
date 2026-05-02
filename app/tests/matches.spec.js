@@ -165,7 +165,11 @@ test.describe('Matches Page', () => {
     await page.goto('/debug/seed');
     await page.goto('/stats?user=TravisSqrt&range=all');
 
-    await page.getByRole('link', { name: 'View matches' }).first().click();
+    const championsCard = page
+      .getByRole('heading', { name: 'Most Played Champions' })
+      .locator('..');
+
+    await championsCard.getByRole('link', { name: 'View matches' }).first().click();
 
     await expect(page).toHaveURL(/\/matches\?user=TravisSqrt&champion=Twitch/);
     await expect(page.locator('body')).toContainText('Viewing matches for:');
@@ -193,5 +197,40 @@ test.describe('Matches Page', () => {
     await expect(page.locator('body')).toContainText('Total Matches');
     await expect(page.locator('body')).toContainText('Matches by Mode');
     await expect(page.locator('body')).toContainText('Most Played Champions');
+  });
+
+  test('should navigate to mode-filtered matches from stats page', async ({ page }) => {
+    await page.goto('/debug/seed');
+    await page.goto('/stats?user=TravisSqrt&range=all');
+
+    const modeCard = page
+      .getByRole('heading', { name: 'Matches by Mode' })
+      .locator('..');
+
+    await modeCard.getByRole('link', { name: 'View matches' }).first().click();
+
+    await expect(page).toHaveURL(/mode=ARAM/);
+    await expect(page.locator('body')).toContainText('Viewing matches for:');
+    await expect(page.locator('body')).toContainText('ARAM');
+
+    await expect(page.locator('tbody tr')).toHaveCount(1);
+    await expect(page.locator('tbody')).toContainText('ARAM');
+    await expect(page.locator('tbody')).not.toContainText('SR');
+  });
+
+  test('should filter stats by mode when clicking ARAM', async ({ page }) => {
+    await page.goto('/debug/seed');
+    await page.goto('/stats?user=TravisSqrt&range=all');
+
+    // Click ARAM in "Matches by Mode"
+    await page.getByRole('link', { name: 'ARAM' }).click();
+
+    await expect(page).toHaveURL(/mode=ARAM/);
+    await expect(page.locator('body')).toContainText('Mode:');
+    await expect(page.locator('body')).toContainText('ARAM');
+
+    // Stats should still render
+    await expect(page.getByText('Total Matches')).toBeVisible();
+    await expect(page.getByText('Win Rate')).toBeVisible();
   });
 });

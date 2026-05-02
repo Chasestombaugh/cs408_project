@@ -263,6 +263,15 @@ function createDatabaseManager(dbPath) {
           ORDER BY played_at DESC, id DESC
         `).all(username, champion);
       },
+
+      getMatchesByUserAndMode: (username, mode) => {
+        ensureConnected();
+        return database.prepare(`
+          SELECT * FROM matches
+          WHERE username = ? AND mode = ?
+          ORDER BY played_at DESC, id DESC
+        `).all(username, mode);
+      },
     },
   };
 }

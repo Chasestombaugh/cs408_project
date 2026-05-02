@@ -2,19 +2,22 @@ var express = require('express');
 var router = express.Router();
 
 /* Landing page */
-router.get('/', function(req, res, next) {
+router.get('/', function (req, res, next) {
   res.render('index', { title: 'RiftTracker' });
 });
 
 /* Match list page */
-router.get('/matches', function(req, res, next) {
+router.get('/matches', function (req, res, next) {
   const username = req.query.user ? req.query.user.trim() : '';
   const champion = req.query.champion ? req.query.champion.trim() : '';
+  const mode = req.query.mode ? req.query.mode.trim() : '';
 
   let matches;
 
   if (username && champion) {
     matches = req.db.getMatchesByUserAndChampion(username, champion);
+  } else if (username && mode) {
+    matches = req.db.getMatchesByUserAndMode(username, mode);
   } else if (username) {
     matches = req.db.getMatchesByUsername(username);
   } else {
@@ -26,20 +29,21 @@ router.get('/matches', function(req, res, next) {
     matches,
     username,
     champion,
+    mode,
   });
 });
 
 /* Add match page */
-router.get('/matches/new', function(req, res, next) {
-  res.render('add-match', { 
+router.get('/matches/new', function (req, res, next) {
+  res.render('add-match', {
     title: 'Add Match',
-    errors: [], 
-    formData: {}, 
+    errors: [],
+    formData: {},
   });
 });
 
 /* Create match */
-router.post('/matches', function(req, res, next) {
+router.post('/matches', function (req, res, next) {
   const errors = validateMatch(req.body);
 
   if (errors.length > 0) {
@@ -57,7 +61,7 @@ router.post('/matches', function(req, res, next) {
 });
 
 /* Match detail page */
-router.get('/matches/:id', function(req, res, next) {
+router.get('/matches/:id', function (req, res, next) {
   const id = parseInt(req.params.id, 10);
 
   // handles an invalid ID format
@@ -91,7 +95,7 @@ router.get('/matches/:id', function(req, res, next) {
 /* renders the edit match page
 *  This validates the ID and gets the match info from the db for the user
 *  pre-populates with the current match data*/
-router.get('/matches/:id/edit', function(req, res, next) {
+router.get('/matches/:id/edit', function (req, res, next) {
   const id = parseInt(req.params.id, 10);
 
   if (isNaN(id)) {
@@ -120,8 +124,8 @@ router.get('/matches/:id/edit', function(req, res, next) {
   });
 });
 
-/* Handles posting the edited match details and redirects to match details page if succesful*/ 
-router.post('/matches/:id/edit', function(req, res, next) {
+/* Handles posting the edited match details and redirects to match details page if succesful*/
+router.post('/matches/:id/edit', function (req, res, next) {
   const id = parseInt(req.params.id, 10);
 
   if (isNaN(id)) {
@@ -159,7 +163,7 @@ router.post('/matches/:id/edit', function(req, res, next) {
 });
 
 /* Delete match */
-router.post('/matches/:id/delete', function(req, res, next) {
+router.post('/matches/:id/delete', function (req, res, next) {
   const id = parseInt(req.params.id, 10);
 
   if (isNaN(id)) {
@@ -186,7 +190,7 @@ router.post('/matches/:id/delete', function(req, res, next) {
 });
 
 /* Stats page */
-router.get('/stats', function(req, res, next) {
+router.get('/stats', function (req, res, next) {
   const username = req.query.user ? req.query.user.trim() : '';
   const champion = req.query.champion ? req.query.champion.trim() : '';
   const range = req.query.range || 'all';
@@ -209,7 +213,7 @@ router.get('/stats', function(req, res, next) {
 });
 
 /* Debug: seed sample data */
-router.get('/debug/seed', function(req, res, next) {
+router.get('/debug/seed', function (req, res, next) {
   const sampleUsername = 'TravisSqrt';
 
   // removes previous rows so dupes don't build up like before
@@ -264,7 +268,7 @@ function validateMatch(data) {
   if (!data.played_at || data.played_at.trim() === '') {
     errors.push('Date played is required.');
   }
-  
+
   if (!data.username || data.username.trim() === '') {
     errors.push('Username is required.');
   }

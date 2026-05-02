@@ -30,6 +30,17 @@
           Clear filter
         </a>
         <% } %>
+
+          <% if (mode) { %>
+            <span class="text-light opacity-75"> • Mode:</span>
+            <strong class="text-gold">
+              <%= mode %>
+            </strong>
+
+            <a href="/matches?user=<%= encodeURIComponent(username) %>" class="ms-2 text-light opacity-75">
+              Clear filter
+            </a>
+            <% } %>
     </p>
     <% } %>
 
